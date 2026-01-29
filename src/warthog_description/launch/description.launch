@@ -2,6 +2,7 @@
 <launch>
   <arg name="config" default="base" />
 
+
   <param name="robot_description"
          command="$(find warthog_description)/scripts/env_run
                   $(find warthog_description)/urdf/configs/$(arg config)
