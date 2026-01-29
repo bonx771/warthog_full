@@ -7,7 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/cuong/warthog/devel:$CMAKE_PREFIX_PATH"
 export PWD='/home/cuong/warthog/build'
-export ROSLISP_PACKAGE_DIRECTORIES="/home/cuong/warthog/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_PACKAGE_PATH="/home/cuong/warthog/src:$ROS_PACKAGE_PATH"

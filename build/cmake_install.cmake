@@ -151,6 +151,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/cuong/warthog/build/warthog_control/cmake_install.cmake")
   include("/home/cuong/warthog/build/warthog_description/cmake_install.cmake")
   include("/home/cuong/warthog/build/warthog_gazebo/cmake_install.cmake")
+  include("/home/cuong/warthog/build/warthog_navigation/warthog_simulation/cmake_install.cmake")
+  include("/home/cuong/warthog/build/warthog_navigation/warthog_slam/cmake_install.cmake")
 
 endif()
 

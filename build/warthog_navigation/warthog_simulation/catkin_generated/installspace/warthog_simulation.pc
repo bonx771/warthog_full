@@ -1,0 +1,8 @@
+prefix=/home/cuong/warthog/install
+
+Name: warthog_simulation
+Description: Description of warthog_simulation
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

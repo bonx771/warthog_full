@@ -176,3 +176,17 @@
 /home/cuong/warthog/build/warthog_gazebo/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir
 /home/cuong/warthog/build/warthog_gazebo/CMakeFiles/dynamic_reconfigure_generate_messages_eus.dir
 /home/cuong/warthog/build/warthog_gazebo/CMakeFiles/gazebo_msgs_generate_messages_eus.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/install/strip.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/install/local.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/install.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/list_install_components.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/rebuild_cache.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/edit_cache.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_simulation/CMakeFiles/test.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/install/strip.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/install/local.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/install.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/list_install_components.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/rebuild_cache.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/edit_cache.dir
+/home/cuong/warthog/build/warthog_navigation/warthog_slam/CMakeFiles/test.dir

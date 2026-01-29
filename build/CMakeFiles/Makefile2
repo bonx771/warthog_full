@@ -59,6 +59,8 @@ all: warthog_simulator/all
 all: warthog_control/all
 all: warthog_description/all
 all: warthog_gazebo/all
+all: warthog_navigation/warthog_simulation/all
+all: warthog_navigation/warthog_slam/all
 
 .PHONY : all
 
@@ -69,6 +71,8 @@ preinstall: warthog_simulator/preinstall
 preinstall: warthog_control/preinstall
 preinstall: warthog_description/preinstall
 preinstall: warthog_gazebo/preinstall
+preinstall: warthog_navigation/warthog_simulation/preinstall
+preinstall: warthog_navigation/warthog_slam/preinstall
 
 .PHONY : preinstall
 
@@ -84,6 +88,8 @@ clean: warthog_simulator/clean
 clean: warthog_control/clean
 clean: warthog_description/clean
 clean: warthog_gazebo/clean
+clean: warthog_navigation/warthog_simulation/clean
+clean: warthog_navigation/warthog_slam/clean
 
 .PHONY : clean
 
@@ -316,6 +322,42 @@ warthog_msgs/clean: warthog_msgs/CMakeFiles/warthog_msgs_generate_messages_py.di
 warthog_msgs/clean: warthog_msgs/CMakeFiles/warthog_msgs_geneus.dir/clean
 
 .PHONY : warthog_msgs/clean
+
+#=============================================================================
+# Directory level rules for directory warthog_navigation/warthog_simulation
+
+# Recursive "all" directory target.
+warthog_navigation/warthog_simulation/all:
+
+.PHONY : warthog_navigation/warthog_simulation/all
+
+# Recursive "preinstall" directory target.
+warthog_navigation/warthog_simulation/preinstall:
+
+.PHONY : warthog_navigation/warthog_simulation/preinstall
+
+# Recursive "clean" directory target.
+warthog_navigation/warthog_simulation/clean:
+
+.PHONY : warthog_navigation/warthog_simulation/clean
+
+#=============================================================================
+# Directory level rules for directory warthog_navigation/warthog_slam
+
+# Recursive "all" directory target.
+warthog_navigation/warthog_slam/all:
+
+.PHONY : warthog_navigation/warthog_slam/all
+
+# Recursive "preinstall" directory target.
+warthog_navigation/warthog_slam/preinstall:
+
+.PHONY : warthog_navigation/warthog_slam/preinstall
+
+# Recursive "clean" directory target.
+warthog_navigation/warthog_slam/clean:
+
+.PHONY : warthog_navigation/warthog_slam/clean
 
 #=============================================================================
 # Directory level rules for directory warthog_simulator
