@@ -1,0 +1,8 @@
+prefix=/home/cuong/warthog/devel
+
+Name: warthog_gazebo
+Description: Description of warthog_gazebo
+Version: 0.2.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: gazebo_ros roscpp
