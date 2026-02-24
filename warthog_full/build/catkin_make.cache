@@ -1,2 +1,0 @@
-m-explore/explore:m-explore/map_merge:rf2o_laser_odometry:rosparam_shortcuts:warthog_control:warthog_description:warthog_gazebo:warthog_msgs:warthog_navigation/warthog_simulation:warthog_navigation/warthog_slam:warthog_simulator
--DCATKIN_DEVEL_PREFIX=/home/cuong/warthog_full/devel -DCMAKE_INSTALL_PREFIX=/home/cuong/warthog_full/install -G Unix Makefiles
