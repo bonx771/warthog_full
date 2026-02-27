@@ -1,0 +1,5 @@
+m-explore/explore
+/home/cuong/warthog_full/devel/.private/explore_lite/share/explore_lite/cmake/explore_liteConfig-version.cmake /home/cuong/warthog_full/devel/share/explore_lite/cmake/explore_liteConfig-version.cmake
+/home/cuong/warthog_full/devel/.private/explore_lite/share/explore_lite/cmake/explore_liteConfig.cmake /home/cuong/warthog_full/devel/share/explore_lite/cmake/explore_liteConfig.cmake
+/home/cuong/warthog_full/devel/.private/explore_lite/lib/pkgconfig/explore_lite.pc /home/cuong/warthog_full/devel/lib/pkgconfig/explore_lite.pc
+/home/cuong/warthog_full/devel/.private/explore_lite/lib/explore_lite/explore /home/cuong/warthog_full/devel/lib/explore_lite/explore

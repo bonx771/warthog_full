@@ -1,0 +1,5 @@
+navigation/fake_localization
+/home/cuong/warthog_full/devel/.private/fake_localization/share/fake_localization/cmake/fake_localizationConfig-version.cmake /home/cuong/warthog_full/devel/share/fake_localization/cmake/fake_localizationConfig-version.cmake
+/home/cuong/warthog_full/devel/.private/fake_localization/share/fake_localization/cmake/fake_localizationConfig.cmake /home/cuong/warthog_full/devel/share/fake_localization/cmake/fake_localizationConfig.cmake
+/home/cuong/warthog_full/devel/.private/fake_localization/lib/fake_localization/fake_localization /home/cuong/warthog_full/devel/lib/fake_localization/fake_localization
+/home/cuong/warthog_full/devel/.private/fake_localization/lib/pkgconfig/fake_localization.pc /home/cuong/warthog_full/devel/lib/pkgconfig/fake_localization.pc

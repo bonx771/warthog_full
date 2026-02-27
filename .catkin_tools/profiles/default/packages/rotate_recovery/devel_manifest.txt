@@ -1,0 +1,5 @@
+navigation/rotate_recovery
+/home/cuong/warthog_full/devel/.private/rotate_recovery/share/rotate_recovery/cmake/rotate_recoveryConfig.cmake /home/cuong/warthog_full/devel/share/rotate_recovery/cmake/rotate_recoveryConfig.cmake
+/home/cuong/warthog_full/devel/.private/rotate_recovery/share/rotate_recovery/cmake/rotate_recoveryConfig-version.cmake /home/cuong/warthog_full/devel/share/rotate_recovery/cmake/rotate_recoveryConfig-version.cmake
+/home/cuong/warthog_full/devel/.private/rotate_recovery/lib/librotate_recovery.so /home/cuong/warthog_full/devel/lib/librotate_recovery.so
+/home/cuong/warthog_full/devel/.private/rotate_recovery/lib/pkgconfig/rotate_recovery.pc /home/cuong/warthog_full/devel/lib/pkgconfig/rotate_recovery.pc
