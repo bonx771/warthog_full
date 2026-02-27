@@ -1,0 +1,5 @@
+navigation/clear_costmap_recovery
+/home/cuong/warthog_full/devel/.private/clear_costmap_recovery/share/clear_costmap_recovery/cmake/clear_costmap_recoveryConfig-version.cmake /home/cuong/warthog_full/devel/share/clear_costmap_recovery/cmake/clear_costmap_recoveryConfig-version.cmake
+/home/cuong/warthog_full/devel/.private/clear_costmap_recovery/share/clear_costmap_recovery/cmake/clear_costmap_recoveryConfig.cmake /home/cuong/warthog_full/devel/share/clear_costmap_recovery/cmake/clear_costmap_recoveryConfig.cmake
+/home/cuong/warthog_full/devel/.private/clear_costmap_recovery/lib/libclear_costmap_recovery.so /home/cuong/warthog_full/devel/lib/libclear_costmap_recovery.so
+/home/cuong/warthog_full/devel/.private/clear_costmap_recovery/lib/pkgconfig/clear_costmap_recovery.pc /home/cuong/warthog_full/devel/lib/pkgconfig/clear_costmap_recovery.pc

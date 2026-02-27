@@ -1,0 +1,41 @@
+<launch>
+     <node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
+     <!-- respawn="false" neu node chet thi khong tu chay lai  -->
+     <param name="robot_base_frame" value="base_link"/>
+     <!-- Frame goc cua robot, dung de tinh vi tri cua robot trong ban do  -->
+     <param name="costmap_topic" value="map"/>
+     <!--  topic ban do dau vao, kieu du lieu nav_msgs/OccupancyGrid, do SLAM publish -->
+     <param name="visualize" value="true"/>\
+     <!-- bat hien thi trong Rviz  -->
+     <param name="planner_frequency" value="0.33"/>
+     <!-- tan so tinh frontier, 0.33 Hz ≈ 3 giay tinh lai 1 lan, neu tang cao thi robot phan ung nhanh hon -->
+     <param name="progress_timeout" value="25.0"/>
+     <!--  Nếu robot không tiến gần goal trong 25 giây → Bỏ frontier đó và chọn cái khác -->
+     <param name="potential_scale" value="2.0"/>
+     <!-- Trọng số khoảng cách Giá trị cao → ưu tiên frontier gần robot -->
+     <param name="orientation_scale" value="0.0"/>
+     <!-- Trọng số cho góc quay robot, 0.0 nghĩa là robot không quan tâm phải quay bao nhiêu, 
+          Nếu tăng lên → robot ưu tiên frontier ít phải xoay -->
+     <param name="gain_scale" value="1.0"/>
+     <!-- Trọng số information gain, Frontier mở ra nhiều vùng chưa biết sẽ được ưu tiên
+          Cost sẽ giảm nếu gain cao  -->
+     <param name="transform_tolerance" value="0.8"/>
+     <!-- Thời gian cho phép sai lệch TF (giây), Nếu TF chậm dưới 0.8s vẫn chấp nhận  -->
+     <param name="min_frontier_size" value="0.3"/>
+     <!-- Frontier nhỏ hơn 0.3 mét sẽ bị loại, Tránh robot đi vào khe nhỏ, nhiễu  --> 
+     </node>
+     <node pkg="explore_lite"
+          type="coverage_controller.py"
+          name="coverage_controller"
+          output="screen" />
+
+     <node pkg="explore_lite"
+          type="coverage_cmd_bridge.py"
+          name="coverage_cmd_bridge"
+          output="screen" />
+
+     <!-- <node pkg="explore_lite"
+          type="coverage_gui.py"
+          name="coverage_gui"
+          output="screen" /> -->
+</launch>

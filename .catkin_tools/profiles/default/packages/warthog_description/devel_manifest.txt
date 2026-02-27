@@ -1,0 +1,4 @@
+warthog_description
+/home/cuong/warthog_full/devel/.private/warthog_description/share/warthog_description/cmake/warthog_descriptionConfig-version.cmake /home/cuong/warthog_full/devel/share/warthog_description/cmake/warthog_descriptionConfig-version.cmake
+/home/cuong/warthog_full/devel/.private/warthog_description/share/warthog_description/cmake/warthog_descriptionConfig.cmake /home/cuong/warthog_full/devel/share/warthog_description/cmake/warthog_descriptionConfig.cmake
+/home/cuong/warthog_full/devel/.private/warthog_description/lib/pkgconfig/warthog_description.pc /home/cuong/warthog_full/devel/lib/pkgconfig/warthog_description.pc
