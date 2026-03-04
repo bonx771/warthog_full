@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- ❗ TẮT EKF KHI DÙNG GAZEBO + AMCL -->
   <arg name="enable_ekf" default="false"/>
 
   <arg name="config_extras"
@@ -14,7 +13,6 @@
         type="spawner"
         args="warthog_joint_publisher warthog_velocity_controller --timeout 10" />
 
-  <!-- ❌ EKF SẼ KHÔNG CHẠY VÌ enable_ekf=false -->
   <group if="$(arg enable_ekf)">
     <node pkg="robot_localization"
           type="ekf_localization_node"

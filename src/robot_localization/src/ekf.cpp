@@ -33,7 +33,7 @@
 #include "robot_localization/ekf.h"
 #include "robot_localization/filter_common.h"
 
-#include <XmlRpcException.h>
+#include <XmlRpcException.h> // đọc parameter trong ROS
 
 #include <iomanip>
 #include <limits>
@@ -44,14 +44,14 @@
 namespace RobotLocalization
 {
   Ekf::Ekf(std::vector<double>) :
-    FilterBase()  // Must initialize filter base!
+    FilterBase()  // khoi tao state_; estimateErrorCovariance_; processNoiseCovariance_; identity_
   {
   }
 
   Ekf::~Ekf()
   {
   }
-
+  // Ham correct
   void Ekf::correct(const Measurement &measurement)
   {
     FB_DEBUG("---------------------- Ekf::correct ----------------------\n" <<
@@ -66,12 +66,12 @@ namespace RobotLocalization
     // attempt to maximize efficiency in Eigen.
 
     // First, determine how many state vector values we're updating
-    std::vector<size_t> updateIndices;
+    std::vector<size_t> updateIndices; // xac dinh state nao duoc update
     for (size_t i = 0; i < measurement.updateVector_.size(); ++i)
-    {
+    { // measurement.updateVector_ là vector bool, neu true thi state do dươc update
       if (measurement.updateVector_[i])
       {
-        // Handle nan and inf values in measurements
+        // Handle nan and inf values in measurements, excluding: loai tru
         if (std::isnan(measurement.measurement_(i)))
         {
           FB_DEBUG("Value at index " << i << " was nan. Excluding from update.\n");
@@ -91,7 +91,7 @@ namespace RobotLocalization
 
     size_t updateSize = updateIndices.size();
 
-    // Now set up the relevant matrices
+    // Now set up the relevant: lien quan matrices
     Eigen::VectorXd stateSubset(updateSize);                              // x (in most literature)
     Eigen::VectorXd measurementSubset(updateSize);                        // z
     Eigen::MatrixXd measurementCovarianceSubset(updateSize, updateSize);  // R
@@ -135,7 +135,7 @@ namespace RobotLocalization
       // the Kalman gain computation will blow up. Really, no
       // measurement can be completely without error, so add a small
       // amount in that case.
-      if (measurementCovarianceSubset(i, i) < 1e-9)
+      if (measurementCovarianceSubset(i, i) < 1e-9)  // giá tri toi thieu của covariance
       {
         FB_DEBUG("WARNING: measurement had very small error covariance for index " << updateIndices[i] <<
                  ". Adding some noise to maintain filter stability.\n");

@@ -52,11 +52,13 @@
 
 namespace RobotLocalization
 {
+  // contructor 1
   template<typename T>
   RosFilter<T>::RosFilter(ros::NodeHandle nh,
                           ros::NodeHandle nh_priv,
                           std::string node_name,
                           std::vector<double> args) :
+      // list cac bien duoc khoi tao
       disabledAtStartup_(false),
       enabled_(false),
       invertTransform_(false),
@@ -69,6 +71,7 @@ namespace RobotLocalization
       toggledOn_(true),
       twoDMode_(false),
       useControl_(false),
+      //
       dynamicDiagErrorLevel_(diagnostic_msgs::DiagnosticStatus::OK),
       staticDiagErrorLevel_(diagnostic_msgs::DiagnosticStatus::OK),
       frequency_(30.0),
@@ -91,6 +94,7 @@ namespace RobotLocalization
       diagnosticUpdater_(nh, nh_priv, node_name),
       tfListener_(tfBuffer_)
   {
+    // EKF 15 state model
     stateVariableNames_.push_back("X");
     stateVariableNames_.push_back("Y");
     stateVariableNames_.push_back("Z");
@@ -109,7 +113,7 @@ namespace RobotLocalization
 
     diagnosticUpdater_.setHardwareID("none");
   }
-
+  // constuctor 2: rut gon
   template<typename T>
   RosFilter<T>::RosFilter(ros::NodeHandle nh, ros::NodeHandle nh_priv, std::vector<double> args) :
       RosFilter<T>::RosFilter(nh, nh_priv, ros::this_node::getName(), args)
