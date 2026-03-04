@@ -1,38 +1,3 @@
-/*********************************************************************
- *
- * Software License Agreement (BSD License)
- *
- *  Copyright (c) 2015-2016, Jiri Horner.
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the Jiri Horner nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- *********************************************************************/
 
 #include <explore/costmap_client.h>
 
@@ -64,10 +29,11 @@ Costmap2DClient::Costmap2DClient(ros::NodeHandle& param_nh,
   param_nh.param("transform_tolerance", transform_tolerance_, 0.3);
 
   /* initialize costmap */
+  // subscribe topic kiểu OccupancyGrid
   costmap_sub_ = subscription_nh.subscribe<nav_msgs::OccupancyGrid>(
       costmap_topic, 1000,
       [this](const nav_msgs::OccupancyGrid::ConstPtr& msg) {
-        updateFullMap(msg);
+        updateFullMap(msg); //Mỗi lần có bản đồ mới → gọi updateFullMap()
       });
   ROS_INFO("Waiting for costmap to become available, topic: %s",
            costmap_topic.c_str());
@@ -80,7 +46,7 @@ Costmap2DClient::Costmap2DClient(ros::NodeHandle& param_nh,
       subscription_nh.subscribe<map_msgs::OccupancyGridUpdate>(
           costmap_updates_topic, 1000,
           [this](const map_msgs::OccupancyGridUpdate::ConstPtr& msg) {
-            updatePartialMap(msg);
+            updatePartialMap(msg); //update từng phần nhỏ thay vì full map
           });
 
   /* resolve tf prefix for robot_base_frame */
@@ -104,10 +70,10 @@ Costmap2DClient::Costmap2DClient(ros::NodeHandle& param_nh,
           robot_base_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
       last_error = ros::Time::now();
     }
-    // The error string will accumulate and errors will typically be the same,
-    // so the last
-    // will do for the warning above. Reset the string here to avoid
-    // accumulation.
+        // Robot cần biết transform giữa:
+        // robot_base_frame_  →  global_frame_
+        // Nếu chưa có TF → đợi
+        // Nếu quá 5 giây → in cảnh báo
     tf_error.clear();
   }
 }
@@ -153,7 +119,7 @@ void Costmap2DClient::updatePartialMap(
               msg->y);
     return;
   }
-
+// tinh vung update cho updatePartiaMap
   size_t x0 = static_cast<size_t>(msg->x);
   size_t y0 = static_cast<size_t>(msg->y);
   size_t xn = msg->width + x0;
@@ -186,7 +152,7 @@ void Costmap2DClient::updatePartialMap(
     }
   }
 }
-
+  // Lấy pose robot trong global frame
 geometry_msgs::Pose Costmap2DClient::getRobotPose() const
 {
   tf::Stamped<tf::Pose> global_pose;
@@ -215,7 +181,7 @@ geometry_msgs::Pose Costmap2DClient::getRobotPose() const
                        ex.what());
     return {};
   }
-  // check global_pose timeout
+  // check global_pose timeout: nếu tranform cũ quá thì bỏ
   if (current_time.toSec() - global_pose.stamp_.toSec() >
       transform_tolerance_) {
     ROS_WARN_THROTTLE(1.0, "Costmap2DClient transform timeout. Current time: "

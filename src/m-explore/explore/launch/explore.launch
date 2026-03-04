@@ -24,18 +24,4 @@
      <param name="min_frontier_size" value="0.3"/>
      <!-- Frontier nhỏ hơn 0.3 mét sẽ bị loại, Tránh robot đi vào khe nhỏ, nhiễu  --> 
      </node>
-     <node pkg="explore_lite"
-          type="coverage_controller.py"
-          name="coverage_controller"
-          output="screen" />
-
-     <node pkg="explore_lite"
-          type="coverage_cmd_bridge.py"
-          name="coverage_cmd_bridge"
-          output="screen" />
-
-     <!-- <node pkg="explore_lite"
-          type="coverage_gui.py"
-          name="coverage_gui"
-          output="screen" /> -->
 </launch>

@@ -30,22 +30,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "robot_localization/ros_filter_types.h"
+#include "robot_localization/ros_filter_types.h" // Header này định nghĩa: RosEkf, RosUkf, các typedef liên quan filter, liên kết giữa ROS wrapper và EKF core
 
 #include <cstdlib>
 
 #include <ros/ros.h>
-
+//argc = argument count; Số lượng tham số truyền vào khi chạy chương trình.
+//argv = argument vector, Là mảng các chuỗi ký tự (string) chứa các tham số dòng lệnh.
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ekf_navigation_node");
-
+  // Đăng ký node với ROS Master
+  // Tên node là: ekf_navigation_node
+  // Sau lệnh này mới có thể publish/subscribe.
   ros::NodeHandle nh;
+  // Dùng để: Subscribe topic thường, Publish topic thường, Lấy param global
   ros::NodeHandle nh_priv("~");
-
+  // NodeHandle private namespace
   RobotLocalization::RosEkf ekf(nh, nh_priv);
+  // Object này chứa toàn bộ hệ thống EKF.
   ekf.initialize();
-  ros::spin();
+  // Trong hàm này sẽ: Load parameters, Set process noise
+  // Set measurement configs, Setup subscribers, Setup timers
+  ros::spin(); // vong lap
 
   return EXIT_SUCCESS;
 }

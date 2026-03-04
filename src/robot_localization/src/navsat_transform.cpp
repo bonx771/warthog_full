@@ -43,7 +43,7 @@
 
 namespace RobotLocalization
 {
-  NavSatTransform::NavSatTransform(ros::NodeHandle nh, ros::NodeHandle nh_priv) :
+  NavSatTransform::NavSatTransform(ros::NodeHandle nh, ros::NodeHandle nh_priv) : // ham khoi tao node
     broadcast_cartesian_transform_(false),
     broadcast_cartesian_transform_as_parent_frame_(false),
     gps_updated_(false),
@@ -111,6 +111,7 @@ namespace RobotLocalization
     nh.getParam("/silent_tf_failure", tf_silent_failure_);
 
     // Subscribe to the messages and services we need
+    // datum là 1 diem goc de làm he quy chieu tinh toa do của robot (x,y,z) sau khi chuyen doi tu lat,long
     datum_srv_ = nh.advertiseService("datum", &NavSatTransform::datumCallback, this);
 
     to_ll_srv_ = nh.advertiseService("toLL", &NavSatTransform::toLLCallback, this);
@@ -173,10 +174,11 @@ namespace RobotLocalization
                          " for process_noise_covariance (type: " << datum_config.getType() << ")");
       }
     }
-
+    // lay odom tu EKF
     odom_sub_ = nh.subscribe("odometry/filtered", 1, &NavSatTransform::odomCallback, this);
+    // lay GPS raw
     gps_sub_  = nh.subscribe("gps/fix", 1, &NavSatTransform::gpsFixCallback, this);
-
+    // lay IMU 
     if (!use_odometry_yaw_ && !use_manual_datum_)
     {
       imu_sub_ = nh.subscribe("imu/data", 1, &NavSatTransform::imuCallback, this);
@@ -201,7 +203,7 @@ namespace RobotLocalization
   {
   }
 
-//  void NavSatTransform::run()
+//  void NavSatTransform::run(), sau khi da có transform thi publish GPS duoi dang odometry
   void NavSatTransform::periodicUpdate(const ros::TimerEvent& event)
   {
     if (!transform_good_)
@@ -245,6 +247,7 @@ namespace RobotLocalization
     {
       // The cartesian pose we have is given at the location of the GPS sensor on the robot. We need to get the
       // cartesian pose of the robot's origin.
+      // Nếu GPS không nằm tại base_link, thì trừ offset.
       tf2::Transform transform_cartesian_pose_corrected;
       if (!use_manual_datum_)
       {
@@ -262,7 +265,7 @@ namespace RobotLocalization
       double imu_roll;
       double imu_pitch;
       double imu_yaw;
-      mat.getRPY(imu_roll, imu_pitch, imu_yaw);
+      mat.getRPY(imu_roll, imu_pitch, imu_yaw); // → Extract roll pitch yaw.
 
       /* The IMU's heading was likely originally reported w.r.t. magnetic north.
        * However, all the nodes in robot_localization assume that orientation data,
@@ -284,6 +287,7 @@ namespace RobotLocalization
        *      we need to add meridian convergence angle when using UTM. This value will be
        *      0.0 when use_local_cartesian is TRUE.
        */
+      // chinh yaw
       imu_yaw += (magnetic_declination_ + yaw_offset_ + utm_meridian_convergence_);
 
       ROS_INFO_STREAM("Corrected for magnetic declination of " << std::fixed << magnetic_declination_ <<
@@ -293,11 +297,15 @@ namespace RobotLocalization
 
       // Convert to tf-friendly structures
       tf2::Quaternion imu_quat;
+      // tao quaternion mới bỏ roll, pitch, chi giữ yaw
       imu_quat.setRPY(0.0, 0.0, imu_yaw);
 
       // The transform order will be orig_odom_pos * orig_cartesian_pos_inverse * cur_cartesian_pos.
       // Doing it this way will allow us to cope with having non-zero odometry position
       // when we get our first GPS message.
+
+
+      // Lấy odom yaw-only
       tf2::Transform cartesian_pose_with_orientation;
       cartesian_pose_with_orientation.setOrigin(transform_cartesian_pose_corrected.getOrigin());
       cartesian_pose_with_orientation.setRotation(imu_quat);
@@ -312,7 +320,7 @@ namespace RobotLocalization
       transform_world_pose_yaw_only.setRotation(odom_quat);
 
       cartesian_world_transform_.mult(transform_world_pose_yaw_only, cartesian_pose_with_orientation.inverse());
-
+        // transform giữa world frame và UTM.
       cartesian_world_trans_inverse_ = cartesian_world_transform_.inverse();
 
       ROS_INFO_STREAM("Transform world frame pose is: " << transform_world_pose_);
@@ -625,7 +633,7 @@ namespace RobotLocalization
         "origin.");
     }
 
-    // Make sure the GPS data is usable
+    // Make sure the GPS data is usable: bo qua GPS loi
     bool good_gps = (msg->status.status != sensor_msgs::NavSatStatus::STATUS_NO_FIX &&
                      !std::isnan(msg->altitude) &&
                      !std::isnan(msg->latitude) &&
@@ -651,6 +659,7 @@ namespace RobotLocalization
       else
       {
         // Transform to UTM using the fixed utm_zone_
+        // Chuyen sang UTM (lat/lon -> x,y)
         int zone_tmp;
         bool northp_tmp;
         try
@@ -711,12 +720,14 @@ namespace RobotLocalization
         double roll = 0;
         double pitch = 0;
         double yaw = 0;
+        // chuyen quaternion sang roll pitch yaw
         RosFilterUtilities::quatToRPY(target_frame_trans.getRotation(), roll_offset, pitch_offset, yaw_offset);
         RosFilterUtilities::quatToRPY(transform_orientation_, roll, pitch, yaw);
 
         ROS_DEBUG_STREAM("Initial orientation is " << transform_orientation_);
 
         // Apply the offset (making sure to bound them), and throw them in a vector
+        // giu goc trong [-n,n]
         tf2::Vector3 rpy_angles(FilterUtilities::clampRotation(roll - roll_offset),
                                 FilterUtilities::clampRotation(pitch - pitch_offset),
                                 FilterUtilities::clampRotation(yaw - yaw_offset));
@@ -727,6 +738,7 @@ namespace RobotLocalization
         tf2::Matrix3x3 mat;
         mat.setRPY(0.0, 0.0, yaw_offset);
         rpy_angles = mat * rpy_angles;
+        // Lưu lại orientation đã chỉnh.
         transform_orientation_.setRPY(rpy_angles.getX(), rpy_angles.getY(), rpy_angles.getZ());
 
         ROS_DEBUG_STREAM("Initial corrected orientation roll, pitch, yaw is (" <<
