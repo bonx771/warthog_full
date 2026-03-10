@@ -10,7 +10,7 @@
   <arg name="yaw" default="0" />
 
   <!-- Enable Warthog Package features -->
-  <arg name="ekf_localization" default="true" />
+  <arg name="ukf_localization" default="true" />
 
   <!-- Load Warthog's and sensores description, controllers, and teleop nodes. -->
   <param name="robot_description"
@@ -26,11 +26,9 @@
   
   <!-- Warthog Control -->
   <include file="$(find warthog_control)/launch/control.launch">
-    <arg name="enable_ekf"  value="$(arg ekf_localization)" />
+    <arg name="enable_ukf"  value="$(arg ukf_localization)" />
   </include>
   <include file="$(find warthog_control)/launch/teleop.launch" />
-  <rosparam command="load" file="$(find warthog_simulation)/params/ekf.yaml" />
-
 
   <!-- Spawn Warthog -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"

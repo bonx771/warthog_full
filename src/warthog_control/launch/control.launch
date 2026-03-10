@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <arg name="enable_ekf" default="false"/>
+  <arg name="enable_ukf" default="false"/>
 
   <arg name="config_extras"
        default="$(eval optenv('WARTHOG_CONFIG_EXTRAS', find('warthog_control') + '/config/empty.yaml'))"/>
@@ -13,10 +13,53 @@
         type="spawner"
         args="warthog_joint_publisher warthog_velocity_controller --timeout 10" />
 
-  <group if="$(arg enable_ekf)">
+  <!-- ========================= -->
+  <!-- EKF + GPS -->
+  <!-- ========================= -->
+
+  <group if="$(arg enable_ukf)">
+
+    <!-- EKF LOCAL (odom frame) -->
     <node pkg="robot_localization"
-          type="ekf_localization_node"
-          name="ekf_localization" />
+          type="ukf_localization_node"
+          name="ukf_local" 
+          output="screen">
+      <rosparam command="load"
+                file="$(find warthog_simulation)/params/ukf_local.yaml"/>
+    </node>
+
+    <!-- NAVSAT TRANSFORM -->
+    <node pkg="robot_localization"
+          type="navsat_transform_node"
+          name="navsat_transform"
+          output="screen">
+
+      <param name="frequency" value="30"/>
+      <param name="delay" value="0.0"/>
+      <param name="magnetic_declination_radians" value="0.0"/>
+      <param name="yaw_offset" value="0.0"/>
+      <param name="zero_altitude" value="true"/>
+      <param name="broadcast_utm_transform" value="true"/>
+      <param name="publish_filtered_gps" value="true"/>
+
+      <!-- Remap topic nếu cần -->
+      <remap from="imu/data" to="/imu/data"/>
+      <remap from="gps/fix" to="/gps/fix"/>
+      <remap from="odometry/filtered" to="/odometry/local"/>
+
+    </node>
+
+    <!-- EKF GLOBAL (map frame) -->
+    <node pkg="robot_localization"
+          type="ukf_localization_node"
+          name="ukf_global"
+          output="screen">
+
+      <rosparam command="load"
+                file="$(find warthog_simulation)/params/ukf_global.yaml"/>
+
+    </node>
+
   </group>
 
   <!-- Override default control parameters -->
