@@ -24,8 +24,8 @@
   <arg name="spawn" value="$(find warthog_simulation)/launch/warthog_spawn.launch" />
 
   <!-- Spawn AprilTag -->
-  <node name="spawn_apriltag" pkg="gazebo_ros" type="spawn_model" 
-        args="-file $(find warthog_simulation)/urdf/apriltag.urdf.xacro -urdf -x 2 -y 0 -z 1 -R 1.57 -P 1.57 -Y -1.57 -model apriltag"/>
+  <!-- <node name="spawn_apriltag" pkg="gazebo_ros" type="spawn_model" 
+        args="-file $(find warthog_simulation)/urdf/apriltag.urdf.xacro -urdf -x 2 -y 0 -z 1 -R 1.57 -P 1.57 -Y -1.57 -model apriltag"/> -->
 
   <include file="$(arg spawn)"/>
   <!-- RF2O Laser Odometry Node -->

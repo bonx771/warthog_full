@@ -2426,48 +2426,6 @@
       </link>
       <pose frame=''>-9 7.4858 0 0 -0 0</pose>
     </model>
-    <model name='fire_hydrant'>
-      <static>1</static>
-      <link name='link'>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <bounce/>
-            <friction>
-              <ode/>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <contact>
-              <ode/>
-            </contact>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <velocity_decay>
-          <linear>0</linear>
-          <angular>0</angular>
-        </velocity_decay>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <gravity>1</gravity>
-      </link>
-      <pose frame=''>6 -6 0 0 -0 0</pose>
-    </model>
     <model name='fire_hydrant_0'>
       <static>1</static>
       <link name='link'>
@@ -2475,7 +2433,7 @@
           <geometry>
             <mesh>
               <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>3 3 3</scale>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -2496,7 +2454,7 @@
           <geometry>
             <mesh>
               <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>3 3 3</scale>
             </mesh>
           </geometry>
         </visual>
@@ -2509,48 +2467,6 @@
         <gravity>1</gravity>
       </link>
       <pose frame=''>-3 4 0 0 -0 0</pose>
-    </model>
-    <model name='fire_hydrant_1'>
-      <static>1</static>
-      <link name='link'>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <bounce/>
-            <friction>
-              <ode/>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <contact>
-              <ode/>
-            </contact>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <velocity_decay>
-          <linear>0</linear>
-          <angular>0</angular>
-        </velocity_decay>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-        <gravity>1</gravity>
-      </link>
-      <pose frame=''>-3 -5 0 0 -0 0</pose>
     </model>
     <model name='Dumpster'>
       <link name='link'>
@@ -3609,31 +3525,11 @@
           <wrench>-0.003354 0.006024 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='fire_hydrant'>
-        <pose frame=''>3.18024 -6.51118 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>3.18024 -6.51118 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='fire_hydrant_0'>
         <pose frame=''>-3 4 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
+        <scale>3 3 3</scale>
         <link name='link'>
           <pose frame=''>-3 4 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='fire_hydrant_1'>
-        <pose frame=''>-7.90686 -2.41363 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose frame=''>-7.90686 -2.41363 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
