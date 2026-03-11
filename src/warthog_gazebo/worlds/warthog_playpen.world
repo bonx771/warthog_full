@@ -2474,7 +2474,7 @@
           <geometry>
             <mesh>
               <uri>model://dumpster/meshes/dumpster.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1 1 1.5</scale>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -2495,7 +2495,7 @@
           <geometry>
             <mesh>
               <uri>model://dumpster/meshes/dumpster.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1 1 1.5</scale>
             </mesh>
           </geometry>
           <material>
@@ -2534,7 +2534,7 @@
           <geometry>
             <mesh>
               <uri>model://dumpster/meshes/dumpster.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1 1 1.5</scale>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -2555,7 +2555,7 @@
           <geometry>
             <mesh>
               <uri>model://dumpster/meshes/dumpster.dae</uri>
-              <scale>1 1 1</scale>
+              <scale>1 1 1.5</scale>
             </mesh>
           </geometry>
           <material>
@@ -3627,7 +3627,7 @@
       </model>
       <model name='jersey_barrier_15'>
         <pose frame=''>4.05485 3.43086 0 0 -0 2.36</pose>
-        <scale>1 1 1</scale>
+        <scale>0.5 1 1.5</scale>
         <link name='link'>
           <pose frame=''>4.05485 3.43086 0 0 -0 2.36</pose>
           <velocity>0 0 0 0 -0 0</velocity>
