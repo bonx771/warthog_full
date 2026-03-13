@@ -1,6 +1,0 @@
-rosparam_shortcuts
-/home/cuong/warthog_full/devel/.private/rosparam_shortcuts/share/rosparam_shortcuts/cmake/rosparam_shortcutsConfig-version.cmake /home/cuong/warthog_full/devel/share/rosparam_shortcuts/cmake/rosparam_shortcutsConfig-version.cmake
-/home/cuong/warthog_full/devel/.private/rosparam_shortcuts/share/rosparam_shortcuts/cmake/rosparam_shortcutsConfig.cmake /home/cuong/warthog_full/devel/share/rosparam_shortcuts/cmake/rosparam_shortcutsConfig.cmake
-/home/cuong/warthog_full/devel/.private/rosparam_shortcuts/lib/librosparam_shortcuts.so /home/cuong/warthog_full/devel/lib/librosparam_shortcuts.so
-/home/cuong/warthog_full/devel/.private/rosparam_shortcuts/lib/pkgconfig/rosparam_shortcuts.pc /home/cuong/warthog_full/devel/lib/pkgconfig/rosparam_shortcuts.pc
-/home/cuong/warthog_full/devel/.private/rosparam_shortcuts/lib/rosparam_shortcuts/example /home/cuong/warthog_full/devel/lib/rosparam_shortcuts/example
