@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <arg name="enable_ekf" default="false"/>
+  <arg name="enable_ekf" default="true"/>
 
   <arg name="config_extras"
        default="$(eval optenv('WARTHOG_CONFIG_EXTRAS', find('warthog_control') + '/config/empty.yaml'))"/>
