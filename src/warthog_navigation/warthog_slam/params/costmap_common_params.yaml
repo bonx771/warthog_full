@@ -16,7 +16,7 @@ cost_scaling_factor: 10.0  #3.0
 resolution: 0.1
 lethal_cost_threshold: 100
 robot_base_frame: base_link
-transform_tolerance: 1.0
+transform_tolerance: 0.5
 
 inflater_layer:
  inflation_radius: 0.4 # 0.9
