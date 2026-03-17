@@ -1,5 +1,0 @@
-navigation/voxel_grid
-/home/cuong/warthog_full/devel/.private/voxel_grid/share/voxel_grid/cmake/voxel_gridConfig-version.cmake /home/cuong/warthog_full/devel/share/voxel_grid/cmake/voxel_gridConfig-version.cmake
-/home/cuong/warthog_full/devel/.private/voxel_grid/share/voxel_grid/cmake/voxel_gridConfig.cmake /home/cuong/warthog_full/devel/share/voxel_grid/cmake/voxel_gridConfig.cmake
-/home/cuong/warthog_full/devel/.private/voxel_grid/lib/libvoxel_grid.so /home/cuong/warthog_full/devel/lib/libvoxel_grid.so
-/home/cuong/warthog_full/devel/.private/voxel_grid/lib/pkgconfig/voxel_grid.pc /home/cuong/warthog_full/devel/lib/pkgconfig/voxel_grid.pc

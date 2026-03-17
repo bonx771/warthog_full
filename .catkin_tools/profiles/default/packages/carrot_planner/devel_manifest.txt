@@ -1,5 +1,0 @@
-navigation/carrot_planner
-/home/cuong/warthog_full/devel/.private/carrot_planner/share/carrot_planner/cmake/carrot_plannerConfig-version.cmake /home/cuong/warthog_full/devel/share/carrot_planner/cmake/carrot_plannerConfig-version.cmake
-/home/cuong/warthog_full/devel/.private/carrot_planner/share/carrot_planner/cmake/carrot_plannerConfig.cmake /home/cuong/warthog_full/devel/share/carrot_planner/cmake/carrot_plannerConfig.cmake
-/home/cuong/warthog_full/devel/.private/carrot_planner/lib/libcarrot_planner.so /home/cuong/warthog_full/devel/lib/libcarrot_planner.so
-/home/cuong/warthog_full/devel/.private/carrot_planner/lib/pkgconfig/carrot_planner.pc /home/cuong/warthog_full/devel/lib/pkgconfig/carrot_planner.pc

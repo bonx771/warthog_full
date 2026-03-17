@@ -1,4 +1,0 @@
-warthog_navigation/warthog_slam
-/home/cuong/warthog_full/devel/.private/warthog_slam/share/warthog_slam/cmake/warthog_slamConfig-version.cmake /home/cuong/warthog_full/devel/share/warthog_slam/cmake/warthog_slamConfig-version.cmake
-/home/cuong/warthog_full/devel/.private/warthog_slam/share/warthog_slam/cmake/warthog_slamConfig.cmake /home/cuong/warthog_full/devel/share/warthog_slam/cmake/warthog_slamConfig.cmake
-/home/cuong/warthog_full/devel/.private/warthog_slam/lib/pkgconfig/warthog_slam.pc /home/cuong/warthog_full/devel/lib/pkgconfig/warthog_slam.pc

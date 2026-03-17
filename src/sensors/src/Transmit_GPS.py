@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import serial
+import subprocess
 from std_msgs.msg import UInt8MultiArray
 
 
@@ -13,6 +14,15 @@ class GPSTransmitter:
     def __init__(self):
 
         rospy.init_node("gps_uart_transmitter")
+
+        # chạy node Receive_GPS
+        subprocess.Popen([
+            "rosrun",
+            "sensors",
+            "Receive_GPS.py"
+        ])
+
+        rospy.loginfo("Started Receive_GPS node")
 
         self.ser = serial.Serial(PORT, BAUD, timeout=1)
 
