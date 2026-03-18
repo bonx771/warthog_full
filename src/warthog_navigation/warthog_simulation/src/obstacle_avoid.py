@@ -5,26 +5,26 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
 
-class FollowGapPro:
+class GapFollowProMax:
 
     def __init__(self):
 
-        rospy.init_node("follow_gap_pro")
+        rospy.init_node("gap_follow_pro_max")
 
         self.cmd_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
         rospy.Subscriber("/scan", LaserScan, self.scan_callback)
 
         # ===== SPEED =====
-        self.max_speed = 1.5
+        self.max_speed = 1.8
         self.min_speed = 0.3
 
         # ===== GAP =====
-        self.bubble_radius = 30
-        self.min_gap_size = 80
+        self.bubble_radius = 35
+        self.min_gap_size = 60
 
-        # ===== SAFETY (hysteresis) =====
-        self.stop_dist = 0.7
-        self.go_dist = 1.0
+        # ===== SAFETY =====
+        self.stop_dist = 0.6
+        self.go_dist = 1.2
 
         # ===== STATE =====
         self.in_danger = False
@@ -39,26 +39,32 @@ class FollowGapPro:
         self.turn_start = None
         self.turn_time = rospy.Duration(2.0)
 
+        # ===== MEMORY =====
+        self.last_turn_dir = 1
 
-    # ===============================
-    # Lidar preprocess
+        # ===== STUCK DETECT =====
+        self.history = []
+        self.stuck_time = rospy.Duration(2.5)
+        self.stuck_start = None
+
+        # ===== SMOOTH =====
+        self.prev_steering = 0
+
+
     # ===============================
     def preprocess(self, ranges):
 
         proc = np.array(ranges)
 
         proc[np.isinf(proc)] = 10
-        proc[np.isnan(proc)] = 0
+        proc[np.isnan(proc)] = 10
 
-        # smoothing
         kernel = np.ones(5) / 5
         proc = np.convolve(proc, kernel, mode='same')
 
         return proc
 
 
-    # ===============================
-    # Find max gap
     # ===============================
     def find_max_gap(self, free_space):
 
@@ -92,7 +98,29 @@ class FollowGapPro:
 
 
     # ===============================
-    # Main callback
+    def detect_stuck(self, front):
+
+        self.history.append(front)
+
+        if len(self.history) > 20:
+            self.history.pop(0)
+
+        if len(self.history) < 20:
+            return False
+
+        movement = max(self.history) - min(self.history)
+
+        if movement < 0.05:
+            if self.stuck_start is None:
+                self.stuck_start = rospy.Time.now()
+            elif rospy.Time.now() - self.stuck_start > self.stuck_time:
+                return True
+        else:
+            self.stuck_start = None
+
+        return False
+
+
     # ===============================
     def scan_callback(self, scan):
 
@@ -100,15 +128,34 @@ class FollowGapPro:
         twist = Twist()
 
         center = len(ranges) // 2
-        front = np.min(ranges[center - 20:center + 20])
+        front = np.min(ranges[center - 25:center + 25])
+
+        # DEBUG
+        rospy.logwarn_throttle(1.0,
+            f"front={front:.2f}, danger={self.in_danger}, escape={self.escape_mode}, turn={self.turn_mode}")
 
         # ====================================
-        # TURN MODE (escape hard)
+        # STUCK → FORCE BREAK
+        # ====================================
+        if self.detect_stuck(front):
+
+            rospy.logwarn("STUCK → BREAK LOOP")
+
+            self.turn_mode = True
+            self.turn_start = rospy.Time.now()
+
+            self.last_turn_dir *= -1
+            self.history = []
+
+            return
+
+        # ====================================
+        # TURN MODE
         # ====================================
         if self.turn_mode:
 
-            twist.linear.x = 0
-            twist.angular.z = 1.2
+            twist.linear.x = 0.0
+            twist.angular.z = 1.5 * self.last_turn_dir
 
             if rospy.Time.now() - self.turn_start > self.turn_time:
                 self.turn_mode = False
@@ -121,8 +168,8 @@ class FollowGapPro:
         # ====================================
         if self.escape_mode:
 
-            twist.linear.x = -0.5
-            twist.angular.z = np.random.choice([-1.0, 1.0])
+            twist.linear.x = -0.8
+            twist.angular.z = np.random.uniform(-2.0, 2.0)
 
             if rospy.Time.now() - self.escape_start > self.escape_time:
                 self.escape_mode = False
@@ -131,7 +178,7 @@ class FollowGapPro:
             return
 
         # ====================================
-        # HYSTERESIS LOGIC
+        # HYSTERESIS
         # ====================================
         if front < self.stop_dist:
             self.in_danger = True
@@ -141,19 +188,15 @@ class FollowGapPro:
         # ====================================
         # DANGER → ESCAPE
         # ====================================
-        if self.in_danger:
+        if self.in_danger and not self.escape_mode:
 
             self.escape_mode = True
             self.escape_start = rospy.Time.now()
-
-            self.cmd_pub.publish(Twist())
             return
 
         # ====================================
-        # FOLLOW GAP
+        # GAP FOLLOW
         # ====================================
-
-        # find closest obstacle
         closest = np.argmin(ranges)
 
         start = max(0, closest - self.bubble_radius)
@@ -162,43 +205,49 @@ class FollowGapPro:
         ranges[start:end] = 0
 
         gap_start, gap_end = self.find_max_gap(ranges)
-
         gap_size = gap_end - gap_start
 
-        # nếu gap quá nhỏ → quay thoát
         if gap_size < self.min_gap_size:
+
             self.turn_mode = True
             self.turn_start = rospy.Time.now()
-            self.cmd_pub.publish(Twist())
+
+            twist.angular.z = 1.5 * self.last_turn_dir
+            self.cmd_pub.publish(twist)
             return
 
-        # chọn điểm giữa gap
         best = (gap_start + gap_end) // 2
-
         angle = scan.angle_min + best * scan.angle_increment
 
         # ====================================
-        # SMOOTH STEERING
+        # SMART BIAS (thoát bẫy)
         # ====================================
-        steering = angle * 1.5
-        steering = np.clip(steering, -1.0, 1.0)
+        bias = 0.15 * self.last_turn_dir
+
+        steering = angle * 1.8 + bias
+
+        # smoothing
+        steering = 0.7 * self.prev_steering + 0.3 * steering
+        steering = np.clip(steering, -1.5, 1.5)
+
+        self.prev_steering = steering
 
         twist.angular.z = steering
 
         # ====================================
-        # SPEED CONTROL
+        # SPEED CONTROL PRO
         # ====================================
         angle_abs = abs(angle)
 
         if angle_abs < 0.1:
             speed = self.max_speed
         elif angle_abs < 0.3:
-            speed = 1.0
+            speed = 1.2
         else:
             speed = self.min_speed
 
-        # thêm giảm tốc khi gần vật
-        speed *= min(front / 2.0, 1.0)
+        # scale theo khoảng trống
+        speed *= max(min(front / 2.5, 1.0), 0.25)
 
         twist.linear.x = speed
 
@@ -207,5 +256,5 @@ class FollowGapPro:
 
 if __name__ == "__main__":
 
-    FollowGapPro()
+    GapFollowProMax()
     rospy.spin()
