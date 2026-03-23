@@ -1,0 +1,19 @@
+<launch>
+
+  <!-- Gazebo -->
+  <include file="$(find warthog_simulation)/launch/warthog_gazebo.launch"/>
+
+  <!-- Move base -->
+  <node pkg="move_base" type="move_base" name="move_base" output="screen">
+    <rosparam file="$(find warthog_navigation)/config/costmap_common.yaml" command="load"/>
+    <rosparam file="$(find warthog_navigation)/config/global_costmap.yaml" command="load"/>
+    <rosparam file="$(find warthog_navigation)/config/local_costmap.yaml" command="load"/>
+    <rosparam file="$(find warthog_navigation)/config/base_local_planner.yaml" command="load"/>
+  </node>
+
+  <!-- Send goal -->
+  <node pkg="rostopic" type="rostopic" name="send_goal"
+        args="pub -1 /move_base_simple/goal geometry_msgs/PoseStamped '{header: {frame_id: map}, pose: {position: {x: 10.0, y: 0.0, z: 0.0}, orientation: {z: 0.0, w: 1.0}}}'"
+        launch-prefix="bash -c 'sleep 3; $0 $@'" />
+
+</launch>

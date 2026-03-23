@@ -446,7 +446,7 @@ AmclNode::AmclNode() :
   private_nh_.param("transform_tolerance", tmp_tol, 0.1);
   private_nh_.param("recovery_alpha_slow", alpha_slow_, 0.001);
   private_nh_.param("recovery_alpha_fast", alpha_fast_, 0.1);
-  private_nh_.param("tf_broadcast", tf_broadcast_, true);
+  private_nh_.param("tf_broadcast", tf_broadcast_, false);
   private_nh_.param("force_update_after_initialpose", force_update_after_initialpose_, false);
   private_nh_.param("force_update_after_set_map", force_update_after_set_map_, false);
 
@@ -588,7 +588,7 @@ void AmclNode::reconfigureCB(AMCLConfig &config, uint32_t level)
   alpha_slow_ = config.recovery_alpha_slow;
   alpha_fast_ = config.recovery_alpha_fast;
   tf_broadcast_ = config.tf_broadcast;
-  force_update_after_initialpose_ = config.force_update_after_initialpose;
+  force_update_after_initialpose_ = config.force_update_after_set_map;
   force_update_after_set_map_ = config.force_update_after_set_map;
 
   do_beamskip_= config.do_beamskip; 
