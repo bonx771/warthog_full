@@ -1,0 +1,51 @@
+<launch>
+  <!-- Keep the robot and LiDAR stationary while comparing successive scans. -->
+  <!-- start.launch remains the single source of truth for the LiDAR driver. -->
+  <arg name="run_lidar" default="true" />
+  <arg name="rviz" default="true" />
+  <arg name="rviz_config" default="$(dirname)/../rviz/dynamic_filter.rviz" />
+  <arg name="raw_cloud_topic" default="/rslidar_points" />
+  <arg name="static_cloud_topic" default="/rslidar_points_static" />
+  <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_candidates" />
+
+  <!-- Slow-motion tuning. At a 10 Hz LiDAR rate, 10 frames is about 1 s. -->
+  <arg name="azimuth_bin_deg" default="0.4" />
+  <arg name="elevation_bin_deg" default="0.1" />
+  <arg name="range_tolerance_m" default="0.08" />
+  <arg name="range_tolerance_ratio" default="0.002" />
+  <arg name="range_ema_alpha" default="0.05" />
+  <arg name="stable_frames" default="5" />
+  <arg name="foreground_persistence_frames" default="100" />
+  <arg name="clearing_persistence_frames" default="3" />
+  <arg name="state_timeout_frames" default="100" />
+
+  <include if="$(arg run_lidar)" file="$(dirname)/start.launch">
+    <arg name="rviz" value="false" />
+  </include>
+
+  <node pkg="rslidar_sdk"
+        type="temporal_dynamic_filter_node"
+        name="temporal_dynamic_filter"
+        output="screen"
+        required="true">
+    <param name="input_topic" value="$(arg raw_cloud_topic)" />
+    <param name="static_topic" value="$(arg static_cloud_topic)" />
+    <param name="dynamic_topic" value="$(arg dynamic_candidates_topic)" />
+    <param name="publish_dynamic_candidates" value="true" />
+    <param name="azimuth_bin_deg" value="$(arg azimuth_bin_deg)" />
+    <param name="elevation_bin_deg" value="$(arg elevation_bin_deg)" />
+    <param name="range_tolerance_m" value="$(arg range_tolerance_m)" />
+    <param name="range_tolerance_ratio" value="$(arg range_tolerance_ratio)" />
+    <param name="range_ema_alpha" value="$(arg range_ema_alpha)" />
+    <param name="stable_frames" value="$(arg stable_frames)" />
+    <param name="foreground_persistence_frames" value="$(arg foreground_persistence_frames)" />
+    <param name="clearing_persistence_frames" value="$(arg clearing_persistence_frames)" />
+    <param name="state_timeout_frames" value="$(arg state_timeout_frames)" />
+    <!-- Keep downstream nodes alive if an unsupported cloud layout is received. -->
+    <param name="fail_open" value="true" />
+  </node>
+
+  <!-- Open the filtered-cloud view even when the driver is already running. -->
+  <node if="$(arg rviz)" pkg="rviz" name="rviz_dynamic_filter" type="rviz"
+        args="-d $(arg rviz_config)" />
+</launch>

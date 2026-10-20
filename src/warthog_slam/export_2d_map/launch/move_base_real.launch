@@ -1,0 +1,63 @@
+<launch>
+
+  <arg name="dwa_planner" default="true"/>
+  <arg name="odom_topic" default="/odom_rf2o"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="laser_frame" default="rslidar"/>
+  <arg name="max_linear_vel" default="0.5"/>
+  <arg name="max_angular_vel" default="0.4"/>
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <rosparam file="$(find warthog_slam)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find warthog_slam)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+    <rosparam file="$(find warthog_slam)/params/map_nav_params/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find warthog_slam)/params/map_nav_params/global_costmap_params.yaml" command="load" />
+
+    <!-- Always load move_base core rates/patience so the control loop does not fall back to the 20 Hz default. -->
+    <rosparam file="$(find warthog_slam)/params/move_base_params.yaml" command="load" />
+    <rosparam file="$(find warthog_slam)/params/base_local_planner_params.yaml" command="load" />
+    <rosparam if="$(arg dwa_planner)" file="$(find warthog_slam)/params/dwa_local_planner_params.yaml" command="load" />
+
+    <!-- Override simulated scan source with the real robot scan topic/frame. -->
+    <rosparam subst_value="true">
+      global_costmap:
+        obstacles_layer:
+          observation_sources: scan
+          scan:
+            sensor_frame: $(arg laser_frame)
+            data_type: LaserScan
+            topic: $(arg scan_topic)
+            marking: true
+            clearing: true
+      local_costmap:
+        obstacles_layer:
+          observation_sources: scan
+          scan:
+            sensor_frame: $(arg laser_frame)
+            data_type: LaserScan
+            topic: $(arg scan_topic)
+            marking: true
+            clearing: true
+    </rosparam>
+
+    <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+
+    <!-- Clamp local planner speeds for the real robot. -->
+    <param name="TrajectoryPlannerROS/max_vel_x" value="$(arg max_linear_vel)"/>
+    <param name="TrajectoryPlannerROS/max_vel_theta" value="$(arg max_angular_vel)"/>
+    <param name="TrajectoryPlannerROS/max_rotational_vel" value="$(arg max_angular_vel)"/>
+    <param name="TrajectoryPlannerROS/min_vel_theta" value="$(eval -float(arg('max_angular_vel')))"/>
+    <param name="TrajectoryPlannerROS/min_in_place_vel_theta" value="$(arg max_angular_vel)"/>
+
+    <param name="DWAPlannerROS/max_vel_x" value="$(arg max_linear_vel)"/>
+    <param name="DWAPlannerROS/max_vel_trans" value="$(arg max_linear_vel)"/>
+    <param name="DWAPlannerROS/max_vel_theta" value="$(arg max_angular_vel)"/>
+
+    <param if="$(arg dwa_planner)" name="DWAPlannerROS/min_vel_x" value="0.0"/>
+    <param unless="$(arg dwa_planner)" name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+
+    <remap from="odom" to="$(arg odom_topic)" />
+  </node>
+</launch>

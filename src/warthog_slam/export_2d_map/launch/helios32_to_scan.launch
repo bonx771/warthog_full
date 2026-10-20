@@ -1,0 +1,37 @@
+<launch>
+  <arg name="cloud_topic" default="/rslidar_points"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="lidar_frame" default="rslidar"/>
+
+  <!-- Convert the desired height above ground into Z in the LiDAR frame. -->
+  <arg name="lidar_height" default="1.10"/>
+  <arg name="min_height_above_ground" default="0.20"/>
+  <arg name="max_height_above_ground" default="1.60"/>
+  <arg name="min_lidar_z"
+       default="$(eval float(arg('min_height_above_ground')) - float(arg('lidar_height')))"/>
+  <arg name="max_lidar_z"
+       default="$(eval float(arg('max_height_above_ground')) - float(arg('lidar_height')))"/>
+
+  <node pkg="pointcloud_to_laserscan"
+        type="pointcloud_to_laserscan_node"
+        name="pointcloud_to_laserscan"
+        output="screen"
+        args="cloud_in:=$(arg cloud_topic) scan:=$(arg scan_topic)">
+
+    <param name="target_frame" value="$(arg lidar_frame)"/>
+    <param name="transform_tolerance" value="0.05"/>
+
+    <!-- 0.20..1.60 m above ground = -0.90..0.50 m in the LiDAR frame. -->
+    <param name="min_height" value="$(arg min_lidar_z)"/>
+    <param name="max_height" value="$(arg max_lidar_z)"/>
+
+    <param name="angle_min" value="-3.14159"/>
+    <param name="angle_max" value="3.14159"/>
+    <param name="angle_increment" value="0.0058"/>
+
+    <param name="scan_time" value="0.0333333"/>
+    <param name="range_min" value="0.5"/>
+    <param name="range_max" value="30.0"/>
+    <param name="use_inf" value="true"/>
+  </node>
+</launch>

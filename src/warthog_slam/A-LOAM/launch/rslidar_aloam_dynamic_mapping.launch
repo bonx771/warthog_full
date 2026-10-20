@@ -1,0 +1,40 @@
+<launch>
+    <!-- Keep the vendor driver unchanged and filter its PointCloud2 output. -->
+    <arg name="run_lidar" default="true" />
+    <arg name="raw_cloud_topic" default="/rslidar_points" />
+    <arg name="static_cloud_topic" default="/rslidar_points_static" />
+    <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_candidates" />
+    <arg name="rviz" default="true" />
+
+    <!-- Temporal filter tuning. At a 10 Hz LiDAR rate, 10 frames is about 1 s. -->
+    <arg name="azimuth_bin_deg" default="0.4" />
+    <arg name="elevation_bin_deg" default="0.1" />
+    <arg name="range_tolerance_m" default="0.20" />
+    <arg name="range_tolerance_ratio" default="0.005" />
+    <arg name="stable_frames" default="3" />
+    <arg name="foreground_persistence_frames" default="30" />
+    <arg name="clearing_persistence_frames" default="3" />
+    <arg name="state_timeout_frames" default="30" />
+
+    <include file="$(find rslidar_sdk)/launch/start_dynamic_filter.launch">
+        <arg name="run_lidar" value="$(arg run_lidar)" />
+        <arg name="raw_cloud_topic" value="$(arg raw_cloud_topic)" />
+        <arg name="static_cloud_topic" value="$(arg static_cloud_topic)" />
+        <arg name="dynamic_candidates_topic" value="$(arg dynamic_candidates_topic)" />
+        <arg name="azimuth_bin_deg" value="$(arg azimuth_bin_deg)" />
+        <arg name="elevation_bin_deg" value="$(arg elevation_bin_deg)" />
+        <arg name="range_tolerance_m" value="$(arg range_tolerance_m)" />
+        <arg name="range_tolerance_ratio" value="$(arg range_tolerance_ratio)" />
+        <arg name="stable_frames" value="$(arg stable_frames)" />
+        <arg name="foreground_persistence_frames" value="$(arg foreground_persistence_frames)" />
+        <arg name="clearing_persistence_frames" value="$(arg clearing_persistence_frames)" />
+        <arg name="state_timeout_frames" value="$(arg state_timeout_frames)" />
+    </include>
+
+    <include file="$(find aloam_velodyne)/launch/aloam_velodyne_HDL_32.launch">
+        <arg name="cloud_topic" value="$(arg static_cloud_topic)" />
+        <arg name="rviz" value="$(arg rviz)" />
+    </include>
+</launch>
+
+<!-- Đây là file chạy khi đã có dữ liệu LiDAR lọc vật cản động -->

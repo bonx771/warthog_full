@@ -1,0 +1,21 @@
+# Cấu hình bản đồ cục bộ cho Warthog Robot, tránh vật cản + ra vận tốc
+local_costmap:
+   global_frame: odom
+   robot_base_frame: base_link
+
+   update_frequency: 5.0
+   publish_frequency: 5.0
+
+   width: 8.0
+   height: 8.0
+   resolution: 0.05
+
+   static_map: false    # Không dùng map tĩnh
+   # Nếu thiếu rolling_window: true → robot sẽ rất dễ “đứng im”
+   rolling_window: true    # Di chuyển theo robot
+
+
+# đang có vấn đề là khi thay đổi vật cản thì bắt đầu map trên rviz loạn, kiểu như không trùng với map tĩnh đã đưa vào, nên robot k cập nhật được vật cản mới
+   plugins:
+   - {name: obstacles_layer, type: "costmap_2d::ObstacleLayer"}
+   - {name: inflation_layer, type: "costmap_2d::InflationLayer"}

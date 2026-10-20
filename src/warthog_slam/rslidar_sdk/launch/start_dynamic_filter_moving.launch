@@ -1,0 +1,71 @@
+<launch>
+  <!-- Standalone with the Warthog base controller: start LiDAR, use its wheel
+       odometry, and publish the LiDAR mount TF. Disable either publisher when
+       another launch already provides it. -->
+  <arg name="run_lidar" default="true"/>
+  <arg name="rviz" default="true"/>
+  <arg name="rviz_config" default="$(dirname)/../rviz/moving_filter.rviz"/>
+  <arg name="raw_cloud_topic" default="/rslidar_points"/>
+  <arg name="odom_topic" default="/warthog_velocity_controller/odom"/>
+  <arg name="static_cloud_topic" default="/rslidar_points_static_moving"/>
+  <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_moving"/>
+  <arg name="odom_frame" default="odom"/>
+  <arg name="base_frame" default="base_link"/>
+  <arg name="lidar_frame" default="rslidar"/>
+
+  <!-- Warthog outdoor_waypoint_obstacle.launch already publishes this TF.
+       Use publish_lidar_tf:=false with that launch, and set these values to
+       the actual measured LiDAR mount when running standalone. -->
+  <arg name="publish_lidar_tf" default="true"/>
+  <arg name="lidar_x" default="0.0"/>
+  <arg name="lidar_y" default="0.0"/>
+  <arg name="lidar_z" default="0.93"/>
+  <arg name="lidar_roll" default="0.0"/>
+  <arg name="lidar_pitch" default="0.0"/>
+  <arg name="lidar_yaw" default="0.0"/>
+
+  <!-- A voxel needs observations over at least 2 s and 5 scans before becoming
+       static. Confirmed cells survive short scan gaps; recent face-adjacent
+       confirmed cells can support wall points shifted by viewing angle. -->
+  <arg name="voxel_size_m" default="0.12"/>
+  <arg name="min_static_age_s" default="2.0"/>
+  <arg name="min_static_scans" default="5"/>
+  <arg name="max_observation_gap_s" default="0.5"/>
+  <arg name="neighbor_support_gap_s" default="1.0"/>
+  <arg name="max_odom_gap_s" default="0.15"/>
+  <arg name="deskew" default="true"/>
+  <arg name="max_scan_duration_s" default="0.2"/>
+  <arg name="evidence_timeout_s" default="5.0"/>
+
+  <include if="$(arg run_lidar)" file="$(dirname)/start.launch">
+    <arg name="rviz" value="false"/>
+  </include>
+
+  <node if="$(arg publish_lidar_tf)" pkg="tf2_ros"
+        type="static_transform_publisher" name="base_to_lidar_for_moving_filter"
+        args="$(arg lidar_x) $(arg lidar_y) $(arg lidar_z) $(arg lidar_roll) $(arg lidar_pitch) $(arg lidar_yaw) $(arg base_frame) $(arg lidar_frame)"/>
+
+  <node pkg="rslidar_sdk" type="moving_dynamic_filter_node"
+        name="moving_dynamic_filter" output="screen" required="true">
+    <param name="input_topic" value="$(arg raw_cloud_topic)"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="static_topic" value="$(arg static_cloud_topic)"/>
+    <param name="dynamic_topic" value="$(arg dynamic_candidates_topic)"/>
+    <param name="odom_frame" value="$(arg odom_frame)"/>
+    <param name="base_frame" value="$(arg base_frame)"/>
+    <param name="voxel_size_m" value="$(arg voxel_size_m)"/>
+    <param name="min_static_age_s" value="$(arg min_static_age_s)"/>
+    <param name="min_static_scans" value="$(arg min_static_scans)"/>
+    <param name="max_observation_gap_s" value="$(arg max_observation_gap_s)"/>
+    <param name="neighbor_support_gap_s" value="$(arg neighbor_support_gap_s)"/>
+    <param name="max_odom_gap_s" value="$(arg max_odom_gap_s)"/>
+    <param name="deskew" value="$(arg deskew)"/>
+    <param name="max_scan_duration_s" value="$(arg max_scan_duration_s)"/>
+    <param name="evidence_timeout_s" value="$(arg evidence_timeout_s)"/>
+  </node>
+
+  <node if="$(arg rviz)" pkg="rviz" type="rviz"
+        name="rviz_moving_filter" args="-d $(arg rviz_config)">
+    <remap from="/rslidar_points_static_moving" to="$(arg static_cloud_topic)"/>
+  </node>
+</launch>

@@ -1,0 +1,83 @@
+<launch>
+    
+    <!-- Khai báo biến chọn bộ điều khiển cục bộ
+    true → dùng DWAPlannerROS
+    false → dùng TrajectoryPlannerROS 
+    Chỉ dùng 1 trong 2, không bao giờ chạy cùng lúc -->
+    <arg name="dwa_planner"  default="true"/> 
+
+
+    <!-- Khởi động node move_base (bộ não điều hướng) -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+        <!-- ========================================== -->
+        <!-- Nạp tham số chung cho costmap (áp dụng cho cả global & local) -->
+        <!-- ========================================== -->
+        <rosparam file="$(find warthog_slam)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find warthog_slam)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        
+
+        <!-- ========================================== -->
+        <!-- Né vật cản
+        - vùng quan sát quanh robot
+        - có rolling_window hay không
+        - frame sử dụng (odom)
+        - tần số cập nhật
+         -->
+        <!-- ========================================== -->
+        <rosparam file="$(find warthog_slam)/params/map_nav_params/local_costmap_params.yaml" command="load" />
+
+
+        <!-- ========================================== -->
+        <!-- tìm đường đi tổng thể 
+        dùng map tĩnh hay không
+        frame map
+        planner có thấy toàn bản đồ không
+        -->
+        <!-- ========================================== -->
+        <rosparam file="$(find warthog_slam)/params/map_nav_params/global_costmap_params.yaml" command="load" />
+        
+        <!-- ========================================== -->
+        <!-- Cấu hình bộ lái cục bộ (planner cơ sở) thông số chung cho local planner, vận tốc,gia tốc, sai số goal, tần số điều khiển -->
+        <!-- ========================================== -->
+        <rosparam file="$(find warthog_slam)/params/base_local_planner_params.yaml" command="load" />
+
+        <!-- ========================================== -->
+        <!-- Nếu dùng DWA thì load thêm tham số DWA -->
+        <!-- ========================================== -->
+        <rosparam if="$(arg dwa_planner)" file="$(find warthog_slam)/params/dwa_local_planner_params.yaml" command="load" />
+
+
+        <!-- ========================================== -->
+        <!-- -->
+        <!-- ========================================== -->
+        <rosparam unless="$(arg dwa_planner)" file="$(find warthog_slam)/params/move_base_params.yaml" command="load" />
+        
+        <!-- ========================================== -->
+        <!-- Chọn bộ tìm đường toàn cục -->
+        <!-- ========================================== -->
+        <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+
+        <!-- ========================================== -->
+        <!-- Ép vận tốc tối thiểu khi dùng DWA -->
+        <!-- Ý nghĩa: cho phép robot dừng hẳn, tránh trường hợp robot cứ bò rất chậm
+            Rất quan trọng khi robot: đứng sát goal, đứng gần vật cản -->
+        <!-- ========================================== -->
+        <param if="$(arg dwa_planner)" name="DWAPlannerROS/min_vel_x" value="0.0"/>
+
+
+        <!-- ========================================== -->
+        <!-- Nếu không dùng DWA → chỉ rõ planner cục bộ -->
+        <!-- ========================================== -->
+        <param unless="$(arg dwa_planner)" name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+        
+
+        <!-- ========================================== -->
+        <!-- Remap odometry -->
+        <remap from="odom" to="odometry/filtered" />
+        <!-- ========================================== -->
+        <!-- <remap from="odom" to="/front/odom_laser" /> -->
+    
+    </node>
+
+</launch>

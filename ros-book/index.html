@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ROS Book</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Docsify theme -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
+
+  <style>
+    /* ===== GENERAL (ACADEMIC STYLE) ===== */
+    body {
+      font-family: "Times New Roman", Georgia, serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #111;
+    }
+
+    .markdown-section {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1, h2, h3 {
+      font-weight: bold;
+      margin-top: 1.5em;
+    }
+
+    h1 { font-size: 28px; }
+    h2 { font-size: 22px; }
+    h3 { font-size: 18px; }
+
+    p {
+      text-align: justify;
+    }
+
+    /* ===== INLINE CODE ===== */
+    code {
+      font-family: Consolas, monospace;
+      background: #f5f5f5;
+      padding: 2px 4px;
+    }
+
+    /* ===== CODE BLOCK ===== */
+    pre {
+      background: #f8f8f8;
+      padding: 12px;
+      border-left: 3px solid #333;
+      overflow-x: auto;
+    }
+
+    /* ===== LIGHT SYNTAX HIGHLIGHT (ACADEMIC) ===== */
+    .token.comment { color: #888; }
+    .token.keyword { color: #005cc5; }
+    .token.string  { color: #032f62; }
+    .token.function { color: #6f42c1; }
+
+    /* ===== BLOCKQUOTE ===== */
+    blockquote {
+      border-left: 3px solid #999;
+      padding-left: 10px;
+      color: #555;
+      font-style: italic;
+    }
+
+    /* ===== LIST ===== */
+    ul {
+      margin-left: 20px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script>
+    window.$docsify = {
+      name: 'ROS Book',
+      loadSidebar: true,
+      loadNavbar: true,
+      subMaxLevel: 3
+    }
+  </script>
+
+  <!-- Docsify -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+
+  <!-- Prism (syntax highlight) -->
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-cpp.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-markup.min.js"></script>
+
+</body>
+</html>

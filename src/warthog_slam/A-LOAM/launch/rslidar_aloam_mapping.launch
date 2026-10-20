@@ -1,0 +1,17 @@
+<launch>
+    <arg name="run_lidar" default="true" />
+    <arg name="cloud_topic" default="/rslidar_points" />
+    <arg name="rviz" default="true" />
+
+    <include if="$(arg run_lidar)" file="$(find rslidar_sdk)/launch/start.launch" />
+
+    <include file="$(find aloam_velodyne)/launch/aloam_velodyne_HDL_32.launch">
+        <arg name="cloud_topic" value="$(arg cloud_topic)" />
+        <arg name="rviz" value="$(arg rviz)" />
+    </include>
+</launch>
+
+
+<!-- roslaunch aloam_velodyne rslidar_aloam_mapping.launch -->
+<!-- roslaunch export_2d_map save_aloam_2d_map.launch output_prefix:=/home/tung/cnn2025_ws/src/export_2d_map/maps/aloam_map -->
+<!-- roslaunch export_2d_map warthog_real_amcl.launch map_file:=/home/tung/cnn2025_ws/src/export_2d_map/maps/aloam_map.yaml laser_frame:=rslidar -->

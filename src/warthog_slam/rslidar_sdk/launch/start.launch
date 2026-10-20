@@ -1,0 +1,9 @@
+<launch>
+  <arg name="rviz" default="true" />
+
+  <node pkg="rslidar_sdk" name="rslidar_sdk_node" type="rslidar_sdk_node" output="screen">
+    <param name="config_path" value="$(dirname)/../config/config.yaml" />
+  </node>
+  <!-- Display the cloud in its own rslidar frame; no TF publisher is needed. -->
+  <!-- <node if="$(arg rviz)" pkg="rviz" name="rviz" type="rviz" args="-d $(dirname)/../rviz/rviz.rviz" /> -->
+</launch>

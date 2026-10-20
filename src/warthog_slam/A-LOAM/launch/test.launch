@@ -1,0 +1,21 @@
+<launch>
+    <param name="scan_line" value="32"/>
+    <param name="minimum_range" value="0.2"/>
+    <param name="mapping_skip_frame" value="2"/>
+    <!-- Keep only a fixed horizontal sector to avoid Warthog chassis returns.
+         0 deg = forward (+X), positive angles = left (+Y). -->
+    <param name="horizontal_angle_filter_enabled" value="true"/>
+    <param name="horizontal_angle_min_deg" value="-120.0"/>
+    <param name="horizontal_angle_max_deg" value="120.0"/>
+
+    <node pkg="aloam_velodyne" type="ascanRegistration" name="scanRegistration" output="screen">
+        <remap from="/velodyne_points" to="/rslidar_points"/>
+    </node>
+
+    <node pkg="aloam_velodyne" type="alaserOdometry" name="laserOdometry" output="screen"/>
+    <node pkg="aloam_velodyne" type="alaserMapping" name="laserMapping" output="screen"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
+</launch>
+
+

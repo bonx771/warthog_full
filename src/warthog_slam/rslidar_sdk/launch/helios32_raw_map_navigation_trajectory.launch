@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<launch>
+  <!--
+    Saved-map navigation with TrajectoryPlannerROS in Trajectory Rollout mode.
+
+    The existing helios32_raw_map_navigation.launch remains unchanged. This
+    wrapper reuses its LiDAR, LaserScan, map_server, AMCL and costmap setup, but
+    selects TrajectoryPlannerROS and explicitly disables its DWA mode.
+  -->
+
+  <arg name="run_lidar" default="true"/>
+  <arg name="rviz" default="true"/>
+  <arg name="use_sim_time" default="false"/>
+
+  <arg name="cloud_topic" default="/rslidar_points"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="lidar_frame" default="rslidar"/>
+  <arg name="lidar_height" default="1.10"/>
+  <arg name="min_height_above_ground" default="0.35"/>
+  <arg name="max_height_above_ground" default="1.60"/>
+
+  <arg name="map_file" default="$(find warthog_slam)/maps/aloam_map_1.yaml"/>
+  <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered"/>
+
+  <!-- The padded footprint has an inscribed radius of about 0.85 m.  Keep a
+       useful cost gradient outside it so Navfn does not place the robot only
+       a few centimetres from an obstacle. -->
+  <arg name="global_inflation_radius" default="1.30"/>
+  <arg name="local_inflation_radius" default="1.30"/>
+  <arg name="inflation_cost_scaling_factor" default="2.50"/>
+  <arg name="obstacle_range" default="10.0"/>
+  <arg name="raytrace_range" default="20.0"/>
+  <arg name="global_costmap_update_frequency" default="5.0"/>
+  <arg name="global_costmap_publish_frequency" default="2.0"/>
+  <arg name="local_costmap_update_frequency" default="10.0"/>
+  <arg name="local_costmap_publish_frequency" default="5.0"/>
+
+  <arg name="max_linear_vel" default="0.70"/>
+  <arg name="min_linear_vel" default="0.1"/>
+  <arg name="max_angular_vel" default="0.40"/>
+  <!-- Match the proven waypoint coarse-turn range.  The 0.25 rad/s floor
+       overcomes the skid-steer deadband; 0.40 rad/s keeps 90/180-degree turns
+       responsive without changing the forward-speed configuration. -->
+  <arg name="min_in_place_angular_vel" default="0.35"/>
+  <arg name="linear_acc_limit" default="0.60"/>
+  <arg name="angular_acc_limit" default="0.80"/>
+
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+
+  <include file="$(dirname)/helios32_raw_map_navigation.launch">
+    <arg name="run_lidar" value="$(arg run_lidar)"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="lidar_frame" value="$(arg lidar_frame)"/>
+    <arg name="lidar_height" value="$(arg lidar_height)"/>
+    <arg name="min_height_above_ground" value="$(arg min_height_above_ground)"/>
+    <arg name="max_height_above_ground" value="$(arg max_height_above_ground)"/>
+    <arg name="map_file" value="$(arg map_file)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="dwa_planner" value="false"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <!-- costmap_2d copies these parent parameters into whichever inflation
+       plugin name is active.  This deliberately covers the global
+       'inflater_layer' and local 'inflation_layer' names used downstream. -->
+  <param name="/move_base/global_costmap/inflation_radius"
+         value="$(arg global_inflation_radius)"/>
+  <param name="/move_base/global_costmap/cost_scaling_factor"
+         value="$(arg inflation_cost_scaling_factor)"/>
+  <param name="/move_base/global_costmap/inflater_layer/inflation_radius"
+         value="$(arg global_inflation_radius)"/>
+  <param name="/move_base/global_costmap/inflater_layer/cost_scaling_factor"
+         value="$(arg inflation_cost_scaling_factor)"/>
+  <param name="/move_base/local_costmap/inflation_radius"
+         value="$(arg local_inflation_radius)"/>
+  <param name="/move_base/local_costmap/cost_scaling_factor"
+         value="$(arg inflation_cost_scaling_factor)"/>
+  <param name="/move_base/local_costmap/inflation_layer/inflation_radius"
+         value="$(arg local_inflation_radius)"/>
+  <param name="/move_base/local_costmap/inflation_layer/cost_scaling_factor"
+         value="$(arg inflation_cost_scaling_factor)"/>
+
+  <!-- pointcloud_to_laserscan publishes +Inf for an empty beam.  Treat those
+       beams as valid clearing rays so a moving person is removed as soon as
+       the space behind them becomes visible again. -->
+  <param name="/move_base/global_costmap/update_frequency"
+         value="$(arg global_costmap_update_frequency)"/>
+  <param name="/move_base/global_costmap/publish_frequency"
+         value="$(arg global_costmap_publish_frequency)"/>
+  <param name="/move_base/global_costmap/obstacle_range"
+         value="$(arg obstacle_range)"/>
+  <param name="/move_base/global_costmap/raytrace_range"
+         value="$(arg raytrace_range)"/>
+  <param name="/move_base/global_costmap/obstacles_layer/scan/obstacle_range"
+         value="$(arg obstacle_range)"/>
+  <param name="/move_base/global_costmap/obstacles_layer/scan/raytrace_range"
+         value="$(arg raytrace_range)"/>
+  <param name="/move_base/global_costmap/obstacles_layer/scan/observation_persistence"
+         value="0.0"/>
+  <param name="/move_base/global_costmap/obstacles_layer/scan/inf_is_valid"
+         value="true"/>
+
+  <param name="/move_base/local_costmap/update_frequency"
+         value="$(arg local_costmap_update_frequency)"/>
+  <param name="/move_base/local_costmap/publish_frequency"
+         value="$(arg local_costmap_publish_frequency)"/>
+  <param name="/move_base/local_costmap/obstacle_range"
+         value="$(arg obstacle_range)"/>
+  <param name="/move_base/local_costmap/raytrace_range"
+         value="$(arg raytrace_range)"/>
+  <param name="/move_base/local_costmap/obstacles_layer/scan/obstacle_range"
+         value="$(arg obstacle_range)"/>
+  <param name="/move_base/local_costmap/obstacles_layer/scan/raytrace_range"
+         value="$(arg raytrace_range)"/>
+  <param name="/move_base/local_costmap/obstacles_layer/scan/observation_persistence"
+         value="0.0"/>
+  <param name="/move_base/local_costmap/obstacles_layer/scan/inf_is_valid"
+         value="true"/>
+
+  <!-- TrajectoryPlannerROS rollout configuration. The positive minimum
+       forward speed avoids the Warthog's low-speed deadband. -->
+  <param name="/move_base/base_local_planner"
+         value="base_local_planner/TrajectoryPlannerROS"/>
+  <param name="/move_base/TrajectoryPlannerROS/dwa" value="false"/>
+  <param name="/move_base/TrajectoryPlannerROS/holonomic_robot" value="false"/>
+
+  <param name="/move_base/TrajectoryPlannerROS/max_vel_x" value="$(arg max_linear_vel)"/>
+  <param name="/move_base/TrajectoryPlannerROS/min_vel_x" value="$(arg min_linear_vel)"/>
+  <param name="/move_base/TrajectoryPlannerROS/max_vel_theta" value="$(arg max_angular_vel)"/>
+  <!-- This TrajectoryPlannerROS implementation still reads the legacy name
+       when rotating to the final goal heading.  Set both limits alike. -->
+  <param name="/move_base/TrajectoryPlannerROS/max_rotational_vel"
+         value="$(arg max_angular_vel)"/>
+  <param name="/move_base/TrajectoryPlannerROS/min_vel_theta"
+         value="$(eval -float(arg('max_angular_vel')))"/>
+  <param name="/move_base/TrajectoryPlannerROS/min_in_place_vel_theta"
+         value="$(arg min_in_place_angular_vel)"/>
+  <param name="/move_base/TrajectoryPlannerROS/acc_lim_x" value="$(arg linear_acc_limit)"/>
+  <param name="/move_base/TrajectoryPlannerROS/acc_lim_theta" value="$(arg angular_acc_limit)"/>
+
+  <param name="/move_base/TrajectoryPlannerROS/sim_time" value="1.8"/>
+  <param name="/move_base/TrajectoryPlannerROS/sim_granularity" value="0.05"/>
+  <param name="/move_base/TrajectoryPlannerROS/angular_sim_granularity" value="0.04"/>
+  <param name="/move_base/TrajectoryPlannerROS/vx_samples" value="10"/>
+  <param name="/move_base/TrajectoryPlannerROS/vtheta_samples" value="24"/>
+
+  <param name="/move_base/TrajectoryPlannerROS/meter_scoring" value="true"/>
+  <param name="/move_base/TrajectoryPlannerROS/pdist_scale" value="1.20"/>
+  <param name="/move_base/TrajectoryPlannerROS/gdist_scale" value="0.80"/>
+  <param name="/move_base/TrajectoryPlannerROS/occdist_scale" value="0.10"/>
+  <param name="/move_base/TrajectoryPlannerROS/heading_scoring" value="false"/>
+  <param name="/move_base/TrajectoryPlannerROS/prune_plan" value="true"/>
+
+  <!-- Reaching within 0.50 m completes the goal regardless of the orientation
+       selected with RViz's 2D Nav Goal arrow. -->
+  <param name="/move_base/TrajectoryPlannerROS/xy_goal_tolerance" value="0.50"/>
+  <param name="/move_base/TrajectoryPlannerROS/yaw_goal_tolerance" value="3.1415927"/>
+  <param name="/move_base/TrajectoryPlannerROS/latch_xy_goal_tolerance" value="true"/>
+  <param name="/move_base/TrajectoryPlannerROS/oscillation_reset_dist" value="0.05"/>
+
+  <!-- Do not abort a valid goal merely because the robot spends time rotating
+       in place. Collision checking and controller patience remain active. -->
+  <param name="/move_base/oscillation_timeout" value="0.0"/>
+  <param name="/move_base/oscillation_distance" value="0.05"/>
+  <param name="/move_base/recovery_behavior_enabled" value="false"/>
+  <param name="/move_base/clearing_rotation_allowed" value="false"/>
+</launch>

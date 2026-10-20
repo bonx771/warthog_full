@@ -1,0 +1,47 @@
+<launch>
+  <!-- Start the LiDAR driver and temporal filter from this launch by default. -->
+  <arg name="run_dynamic_filter" default="true"/>
+  <arg name="run_lidar" default="true"/>
+  <arg name="rviz" default="true"/>
+
+  <!-- Use only the static cloud published by temporal_dynamic_filter_node. -->
+  <arg name="cloud_topic" default="/rslidar_points_static"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="lidar_frame" default="rslidar"/>
+
+  <!-- LiDAR is 1.10 m above ground: ground..1.60 m = lidar Z -1.10..0.50 m. -->
+  <arg name="lidar_height" default="1.10"/>
+  <arg name="min_height_above_ground" default="0.0"/>
+  <arg name="max_height_above_ground" default="1.60"/>
+
+  <include if="$(arg run_dynamic_filter)" file="$(dirname)/start_dynamic_filter.launch">
+    <arg name="run_lidar" value="$(arg run_lidar)"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+    <arg name="static_cloud_topic" value="$(arg cloud_topic)"/>
+  </include>
+
+  <node pkg="pointcloud_to_laserscan"
+        type="pointcloud_to_laserscan_node"
+        name="static_pointcloud_to_laserscan"
+        output="screen">
+    <remap from="cloud_in" to="$(arg cloud_topic)"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+
+    <param name="target_frame" value="$(arg lidar_frame)"/>
+    <param name="transform_tolerance" value="0.05"/>
+
+    <param name="min_height" value="$(eval float(arg('min_height_above_ground')) - float(arg('lidar_height')))"/>
+    <param name="max_height" value="$(eval float(arg('max_height_above_ground')) - float(arg('lidar_height')))"/>
+
+    <param name="angle_min" value="-3.14159"/>
+    <param name="angle_max" value="3.14159"/>
+    <param name="angle_increment" value="0.0058"/>
+    <param name="scan_time" value="0.0333333"/>
+    <param name="range_min" value="0.5"/>
+    <param name="range_max" value="30.0"/>
+    <param name="use_inf" value="true"/>
+    <param name="inf_epsilon" value="1.0"/>
+  </node>
+</launch>
+
+<!-- chuyển thành tia 2D với dữ liệu bỏ vật cản động khi robbot đứng yên -->

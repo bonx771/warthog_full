@@ -1,0 +1,82 @@
+<launch>
+  <!-- One-command navigation on an existing SLAM map using the Helios 32. -->
+  <arg name="run_lidar" default="true"/>
+  <arg name="rviz" default="true"/>
+  <arg name="use_sim_time" default="false"/>
+
+  <arg name="cloud_topic" default="/rslidar_points"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="lidar_frame" default="rslidar"/>
+  <arg name="lidar_height" default="1.10"/>
+  <arg name="min_height_above_ground" default="0.20"/>
+  <arg name="max_height_above_ground" default="1.60"/>
+
+  <arg name="map_file" default="$(find warthog_slam)/maps/aloam_map_1.yaml"/>
+  <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered"/>
+  <arg name="dwa_planner" default="true"/>
+  <arg name="max_linear_vel" default="0.70"/>
+  <arg name="max_angular_vel" default="0.40"/>
+  <arg name="min_trans_vel" default="0.05"/>
+  <arg name="min_angular_vel" default="0.10"/>
+  <arg name="linear_acc_limit" default="0.60"/>
+  <arg name="angular_acc_limit" default="1.00"/>
+  <!-- move_base only uses translation to reset its oscillation timer. Give the
+       robot enough time to rotate in place before declaring it
+       stuck, while still retaining automatic recovery for a real blockage. -->
+  <arg name="oscillation_timeout" default="40.0"/>
+  <arg name="oscillation_distance" default="0.10"/>
+
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+
+  <!-- Start the raw LiDAR (optionally) and publish the 2D scan. RViz is
+       started by the navigation launch below, so disable the scan-only RViz. -->
+  <include file="$(dirname)/run_lidar/helios32_raw_to_scan.launch">
+    <arg name="run_lidar" value="$(arg run_lidar)"/>
+    <arg name="rviz" value="false"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="lidar_frame" value="$(arg lidar_frame)"/>
+    <arg name="lidar_height" value="$(arg lidar_height)"/>
+    <arg name="min_height_above_ground" value="$(arg min_height_above_ground)"/>
+    <arg name="max_height_above_ground" value="$(arg max_height_above_ground)"/>
+  </include>
+
+  <!-- Reuse the checked map/AMCL/move_base configuration. Its point-cloud
+       converter is disabled because the launch above already publishes /scan. -->
+  <include file="$(find export_2d_map)/launch/warthog_real_amcl_checked.launch">
+    <arg name="rviz" value="$(arg rviz)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="scan_topic" value="$(arg scan_topic)"/>
+    <arg name="use_scan_converter" value="false"/>
+    <arg name="use_rf2o_odom" value="false"/>
+    <arg name="wheel_odom_topic" value="$(arg odom_topic)"/>
+    <arg name="publish_wheel_odom_tf" value="false"/>
+    <arg name="publish_lidar_static_tf" value="false"/>
+    <arg name="lidar_frame" value="$(arg lidar_frame)"/>
+    <arg name="map_file" value="$(arg map_file)"/>
+    <arg name="dwa_planner" value="$(arg dwa_planner)"/>
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <!-- move_base_real only loads DWA parameters; select the DWA plugin here.
+       Conservative real-robot limits reduce abrupt start/stop commands. -->
+  <group if="$(arg dwa_planner)">
+    <param name="/move_base/base_local_planner"
+           value="dwa_local_planner/DWAPlannerROS"/>
+    <param name="/move_base/DWAPlannerROS/max_vel_x" value="$(arg max_linear_vel)"/>
+    <param name="/move_base/DWAPlannerROS/max_vel_trans" value="$(arg max_linear_vel)"/>
+    <param name="/move_base/DWAPlannerROS/max_vel_theta" value="$(arg max_angular_vel)"/>
+    <param name="/move_base/DWAPlannerROS/min_vel_trans" value="$(arg min_trans_vel)"/>
+    <param name="/move_base/DWAPlannerROS/min_vel_theta" value="$(arg min_angular_vel)"/>
+    <param name="/move_base/DWAPlannerROS/acc_lim_x" value="$(arg linear_acc_limit)"/>
+    <param name="/move_base/DWAPlannerROS/acc_lim_theta" value="$(arg angular_acc_limit)"/>
+    <param name="/move_base/DWAPlannerROS/oscillation_reset_dist"
+           value="$(arg oscillation_distance)"/>
+    <param name="/move_base/oscillation_timeout" value="$(arg oscillation_timeout)"/>
+    <param name="/move_base/oscillation_distance" value="$(arg oscillation_distance)"/>
+  </group>
+</launch>

@@ -1,0 +1,100 @@
+<launch>
+  <arg name="enable_initialpose_manager" default="true"/>
+  <arg name="gps_topic" default="/gps/fix"/>
+  <arg name="gps_port" default="/dev/ttyACM0"/>
+  <arg name="gps_baud_rate" default="9600"/>
+  <arg name="heading_topic" default="/imu/data"/>
+  <arg name="amcl_pose_topic" default="/amcl_pose"/>
+  <arg name="initialpose_topic" default="/initialpose"/>
+
+  <!--
+    GPS -> map SLAM alignment.
+    Set these after calibrating one GPS origin point on the SLAM map and the
+    yaw rotation from UTM axes into the SLAM map frame.
+  -->
+  <arg name="gps_origin_lat" default="nan"/>
+  <arg name="gps_origin_lon" default="nan"/>
+  <arg name="utm_origin_easting" default="nan"/>
+  <arg name="utm_origin_northing" default="nan"/>
+  <arg name="map_origin_x" default="nan"/>
+  <arg name="map_origin_y" default="nan"/>
+  <arg name="utm_to_map_yaw" default="nan"/>
+
+  <!-- GPS antenna offset relative to base_link: +x forward, +y left. -->
+  <arg name="gps_antenna_x" default="nan"/>
+  <arg name="gps_antenna_y" default="nan"/>
+
+  <!-- Add this if IMU yaw is not already ENU yaw aligned with UTM east. -->
+  <arg name="heading_yaw_offset" default="nan"/>
+
+  <arg name="use_gps_initialpose" default="true"/>
+  <arg name="use_saved_pose_fallback" default="true"/>
+  <arg name="auto_publish_on_start" default="true"/>
+  <arg name="pose_file" default="$(env HOME)/.ros/gps_pkg/last_amcl_pose.json"/>
+  <arg name="alignment_file" default="$(env HOME)/.ros/gps_pkg/gps_map_alignment.json"/>
+
+  <!-- Node đọc GPS thật -->
+  <node pkg="gps_pkg" type="gps_node.py" name="gps_node" output="screen">
+    <param name="gps_topic" value="$(arg gps_topic)"/>
+    <param name="gps_port" value="$(arg gps_port)"/>
+    <param name="baud_rate" value="$(arg gps_baud_rate)"/>
+  </node>
+
+  <node pkg="gps_pkg"
+        type="gps_origin_distance_logger.py"
+        name="gps_origin_distance_logger"
+        output="screen">
+    <param name="gps_topic" value="$(arg gps_topic)"/>
+  </node>
+
+  <node if="$(arg enable_initialpose_manager)"
+        pkg="gps_pkg"
+        type="gps_initialpose_manager.py"
+        name="gps_initialpose_manager"
+        output="screen">
+    <param name="gps_topic" value="$(arg gps_topic)"/>
+    <param name="heading_topic" value="$(arg heading_topic)"/>
+    <param name="amcl_pose_topic" value="$(arg amcl_pose_topic)"/>
+    <param name="initialpose_topic" value="$(arg initialpose_topic)"/>
+
+    <param name="gps_origin_lat" value="$(arg gps_origin_lat)"/>
+    <param name="gps_origin_lon" value="$(arg gps_origin_lon)"/>
+    <param name="utm_origin_easting" value="$(arg utm_origin_easting)"/>
+    <param name="utm_origin_northing" value="$(arg utm_origin_northing)"/>
+    <param name="map_origin_x" value="$(arg map_origin_x)"/>
+    <param name="map_origin_y" value="$(arg map_origin_y)"/>
+    <param name="utm_to_map_yaw" value="$(arg utm_to_map_yaw)"/>
+
+    <param name="gps_antenna_x" value="$(arg gps_antenna_x)"/>
+    <param name="gps_antenna_y" value="$(arg gps_antenna_y)"/>
+    <param name="heading_yaw_offset" value="$(arg heading_yaw_offset)"/>
+
+    <param name="use_gps_initialpose" value="$(arg use_gps_initialpose)"/>
+    <param name="use_saved_pose_fallback" value="$(arg use_saved_pose_fallback)"/>
+    <param name="auto_publish_on_start" value="$(arg auto_publish_on_start)"/>
+    <param name="pose_file" value="$(arg pose_file)"/>
+    <param name="alignment_file" value="$(arg alignment_file)"/>
+  </node>
+</launch>
+
+
+<!-- lần 1 -->
+<!-- roslaunch gps_pkg navsat_transform_gps.launch heading_topic:=/imu/data
+rosservice call /gps_initialpose_manager/save_alignment_from_current_pose
+ -->
+
+
+<!-- lần 2 -->
+<!-- roslaunch gps_pkg navsat_transform_gps.launch heading_topic:=/imu/data
+ -->
+
+
+<!-- ros-bridge -->
+<!-- Nếu app qua rosbridge muốn bấm nút để publish lại initial pose: -->
+<!-- {"op":"call_service","service":"/gps_initialpose_manager/publish_initialpose","args":{}}
+ -->
+
+
+<!-- Nếu app qua rosbridge muốn bấm nút để publish lại initial pose: -->
+<!-- {"op":"call_service","service":"/gps_initialpose_manager/save_alignment_from_current_pose","args":{}}
+ -->

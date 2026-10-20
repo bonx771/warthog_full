@@ -1,0 +1,33 @@
+Terminal 1: chạy LiDAR driver nếu chưa có /rslidar_points:
+
+roslaunch rslidar_sdk start.launch
+=====================================================================================
+Terminal 2: chạy GPS + auto initial pose:
+
+roslaunch gps_pkg navsat_transform_gps.launch heading_topic:=/imu/data
+Nếu IMU topic thực tế là /imu/data_covariance thì dùng:
+
+roslaunch gps_pkg navsat_transform_gps.launch heading_topic:=/imu/data_covariance
+=====================================================================================
+Terminal 3: chạy map SLAM navigation:
+
+roslaunch export_2d_map warthog_real_amcl_checked.launch \
+  map_file:=/home/cuong/warthog_full/src/warthog_slam/warthog_slam/maps/aloam_map.yaml
+=====================================================================================
+Nếu dùng odom EKF/bánh xe thay vì RF2O:
+
+roslaunch export_2d_map warthog_real_amcl_checked.launch \
+  map_file:=/home/cuong/warthog_full/src/warthog_slam/warthog_slam/maps/aloam_map.yaml \
+  use_rf2o_odom:=false \
+  wheel_odom_topic:=/odometry/filtered \
+  publish_wheel_odom_tf:=false
+
+=====================================================================================
+Lần đầu tiên, khi AMCL đã đúng vị trí trên map, lưu alignment GPS-map một lần:
+
+rosservice call /gps_initialpose_manager/save_alignment_from_current_pose
+
+=====================================================================================
+Từ lần sau không cần chọn RViz nữa. Khi GPS launch chạy, nó sẽ tự publish /initialpose. Nếu muốn app bấm nút gửi lại initial pose qua rosbridge, gọi service:
+
+{"op":"call_service","service":"/gps_initialpose_manager/publish_initialpose","args":{}}

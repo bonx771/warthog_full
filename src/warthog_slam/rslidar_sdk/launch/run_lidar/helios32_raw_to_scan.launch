@@ -1,0 +1,81 @@
+<launch>
+  <!-- Start the LiDAR driver from this launch by default. -->
+  <arg name="run_lidar" default="true"/>
+  <arg name="rviz" default="true"/>
+  <arg name="rviz_config" default="$(dirname)/../../rviz/scan_only.rviz"/>
+
+  <!-- Raw Helios 32 point cloud: dynamic obstacles are kept. -->
+  <arg name="cloud_topic" default="/rslidar_points"/>
+  <arg name="imu_topic" default="/imu/data_new"/>
+  <arg name="obstacle_cloud_topic" default="/rslidar_points_obstacles"/>
+  <arg name="ground_cloud_topic" default="/rslidar_points_ground"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="lidar_frame" default="rslidar"/>
+  <arg name="ground_filter_config" default="$(dirname)/../../config/imu_ground_filter.yaml"/>
+  <arg name="require_imu" default="true"/>
+
+  <!-- Height is now evaluated relative to the locally fitted ground line. -->
+  <arg name="lidar_height" default="1.23"/>
+  <arg name="min_height_above_ground" default="0.30"/>
+  <arg name="max_height_above_ground" default="1.60"/>
+
+  <include if="$(arg run_lidar)" file="$(dirname)/../start.launch">
+    <!-- Do not open the PointCloud2 RViz configuration from start.launch. -->
+    <arg name="rviz" value="false"/>
+  </include>
+
+  <!--
+    Compensate roll/pitch with IMU, follow the road with radial ground lines,
+    and publish only returns whose height above that road is in the configured
+    obstacle band. Published XYZ remains in lidar_frame, so no synthetic
+    base_stabilized TF is introduced.
+  -->
+  <node pkg="rslidar_sdk"
+        type="imu_ground_filter_node"
+        name="imu_ground_filter"
+        output="screen">
+    <rosparam command="load" file="$(arg ground_filter_config)"/>
+    <param name="input_topic" value="$(arg cloud_topic)"/>
+    <param name="imu_topic" value="$(arg imu_topic)"/>
+    <param name="obstacle_topic" value="$(arg obstacle_cloud_topic)"/>
+    <param name="ground_topic" value="$(arg ground_cloud_topic)"/>
+    <param name="lidar_height" value="$(arg lidar_height)"/>
+    <param name="min_obstacle_height" value="$(arg min_height_above_ground)"/>
+    <param name="max_obstacle_height" value="$(arg max_height_above_ground)"/>
+    <param name="require_imu" value="$(arg require_imu)"/>
+  </node>
+
+  <node pkg="pointcloud_to_laserscan"
+        type="pointcloud_to_laserscan_node"
+        name="obstacle_cloud_to_laserscan"
+        output="screen">
+    <remap from="cloud_in" to="$(arg obstacle_cloud_topic)"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+
+    <!-- Filtered points retain their original LiDAR-frame coordinates. -->
+    <param name="target_frame" value="$(arg lidar_frame)"/>
+    <param name="transform_tolerance" value="0.05"/>
+
+    <!-- Ground-relative height filtering was already done by the node above. -->
+    <param name="min_height" value="-100.0"/>
+    <param name="max_height" value="100.0"/>
+
+    <param name="angle_min" value="-3.14159"/>
+    <param name="angle_max" value="3.14159"/>
+    <param name="angle_increment" value="0.0058"/>
+    <param name="scan_time" value="0.0333333"/>
+    <param name="range_min" value="0.5"/>
+    <param name="range_max" value="30.0"/>
+    <param name="use_inf" value="true"/>
+    <param name="inf_epsilon" value="1.0"/>
+  </node>
+
+  <!-- This RViz configuration contains only the generated LaserScan. -->
+  <node if="$(arg rviz)"
+        pkg="rviz"
+        type="rviz"
+        name="rviz_scan"
+        args="-d $(arg rviz_config)">
+    <remap from="/scan" to="$(arg scan_topic)"/>
+  </node>
+</launch>

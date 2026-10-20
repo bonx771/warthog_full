@@ -1,0 +1,16 @@
+<launch>
+  <node pkg="warthog_simulation"
+        type="coverage_controller.py"
+        name="coverage_controller"
+        output="screen" />
+
+  <node pkg="warthog_simulation"
+        type="coverage_cmd_bridge.py"
+        name="coverage_cmd_bridge"
+        output="screen" />
+
+  <node pkg="warthog_simulation"
+        type="coverage_gui.py"
+        name="coverage_gui"
+        output="screen" />
+</launch>

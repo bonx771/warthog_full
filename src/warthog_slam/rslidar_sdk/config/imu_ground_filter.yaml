@@ -1,0 +1,41 @@
+# Helios 32 ground removal for the real Warthog.
+# Heights are measured along gravity after roll/pitch compensation from IMU.
+lidar_height: 1.23
+min_range: 0.50
+max_range: 20.0
+min_obstacle_height: 0.30
+max_obstacle_height: 1.60
+
+# Piecewise radial line fitting. max_slope is tan(maximum road angle):
+# 0.35 ~= 19.3 degrees.
+n_segments: 360
+n_bins: 120
+max_slope: 0.35
+max_dist_to_line: 0.08
+max_start_height: 0.20
+ground_seed_max_range: 2.0
+max_long_height: 0.15
+long_threshold: 1.0
+max_fit_error: 0.05
+fit_window: 6
+
+# Hold the output if attitude is unavailable/stale. This is fail-safe: the
+# navigation safety watchdog will see a stale scan instead of a falsely clear
+# road. The launch arg can disable this only for bench testing without an IMU.
+require_imu: true
+imu_timeout: 0.50
+tf_timeout: 0.03
+
+# Current URDF/launch mounts imu_link and rslidar with parallel axes. TF is
+# still used when available; this permits the known-aligned fallback if those
+# static transforms have not appeared yet during startup.
+assume_aligned_imu_lidar: true
+
+# Crop the 1.52 x 1.38 m vehicle body (8 cm horizontal padding).
+self_filter_enabled: true
+self_x_min: -0.84
+self_x_max: 0.84
+self_y_min: -0.77
+self_y_max: 0.77
+self_z_min: -1.33
+self_z_max: 0.10
