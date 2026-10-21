@@ -1,4 +1,42 @@
 <launch>
+    <!-- Tên nhận từ terminal hoặc launch_manager qua map_name:=... -->
+    <arg name="map_name" default="aloam_map" />
+
+    <!-- Thu muc luu ban do -->
+    <arg name="map_dir"
+         default="$(find warthog_slam)/maps" />
+
+    <!-- Duong dan dau ra -->
+    <arg name="output_prefix"
+         default="$(arg map_dir)/$(arg map_name)" />
+
+    <!-- Cau hinh PointCloud -->
+    <arg name="topic" default="/laser_cloud_map" />
+    <arg name="resolution" default="0.05" />
+    <arg name="z_min" default="-0.20" />
+    <arg name="z_max" default="0.50" />
+    <arg name="padding" default="1.0" />
+    <arg name="min_points_per_cell" default="1" />
+    <arg name="once" default="true" />
+
+    <node pkg="export_2d_map"
+          type="export_2d_map_from_cloud.py"
+          name="save_aloam_2d_map"
+          output="screen">
+
+        <param name="topic" value="$(arg topic)" />
+        <param name="output_prefix" value="$(arg output_prefix)" />
+        <param name="resolution" value="$(arg resolution)" />
+        <param name="z_min" value="$(arg z_min)" />
+        <param name="z_max" value="$(arg z_max)" />
+        <param name="padding" value="$(arg padding)" />
+        <param name="min_points_per_cell" value="$(arg min_points_per_cell)" />
+        <param name="once" value="$(arg once)" />
+
+    </node>
+</launch>
+
+<!-- <launch>
     <arg name="topic" default="/laser_cloud_map" />
     <arg name="output_prefix" default="/home/cuong/warthog_full/src/warthog_slam/export_2d_map/maps/aloam_map" />
     <arg name="resolution" default="0.05" />
@@ -21,4 +59,4 @@
         <param name="min_points_per_cell" value="$(arg min_points_per_cell)" />
         <param name="once" value="$(arg once)" />
     </node>
-</launch>
+</launch> -->

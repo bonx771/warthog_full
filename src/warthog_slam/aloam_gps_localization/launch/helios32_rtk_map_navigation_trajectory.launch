@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- AMCL remains the sole map->odom publisher. No GPS/global map EKF is launched here. -->
+  <arg name="map_name" default="aloam_map_rtk" />
+  <arg name="map_dir" default="$(find warthog_slam)/maps" />
+  <arg name="georef_file" default="$(arg map_dir)/$(arg map_name)_geo.yaml" />
+
+  <arg name="run_lidar" default="true" />
+  <arg name="rviz" default="true" />
+  <arg name="use_sim_time" default="false" />
+  <arg name="cloud_topic" default="/rslidar_points" />
+  <arg name="scan_topic" default="/scan" />
+  <arg name="lidar_frame" default="rslidar" />
+  <arg name="lidar_x" default="0.40" />
+  <arg name="lidar_y" default="0.0" />
+  <arg name="lidar_z" default="1.10" />
+  <arg name="lidar_height" default="1.10" />
+  <arg name="min_height_above_ground" default="0.35" />
+  <arg name="max_height_above_ground" default="1.60" />
+
+  <!-- Enable this for a self-contained AMCL TF chain. Disable it if the same
+       local EKF and odom->base_link TF are already running elsewhere. -->
+  <arg name="run_local_odom" default="true" />
+  <arg name="run_imu" default="true" />
+  <arg name="imu_serial_port"
+       default="/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AQ00TCCT-if00-port0" />
+  <arg name="ekf_odom_params"
+       default="$(find outdoor_waypoint_nav)/params/ekf_se_odom.yaml" />
+  <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered" />
+
+  <arg name="run_gps" default="true" />
+  <arg name="gps_topic" default="/gps/fix" />
+  <arg name="heading_topic" default="/gps/heading" />
+  <arg name="serial_port"
+       default="/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0" />
+  <arg name="baud_rate" default="115200" />
+  <arg name="protocol" default="stm32" />
+  <arg name="heading_offset_deg" default="0.0" />
+  <arg name="gps_antenna_x" default="0.0" />
+  <arg name="gps_antenna_y" default="0.0" />
+  <arg name="gps_antenna_z" default="0.0" />
+  <arg name="publish_gps_tf" default="true" />
+
+  <arg name="max_gps_variance_m2" default="0.04" />
+  <arg name="max_heading_variance_rad2" default="0.007615435" />
+  <arg name="max_sensor_age_sec" default="1.0" />
+  <arg name="max_georef_rms_m" default="1.0" />
+
+  <include if="$(arg run_local_odom)"
+           file="$(find outdoor_waypoint_nav)/launch/outdoor/amcl_odom_tf.launch">
+    <arg name="ekf_odom_params" value="$(arg ekf_odom_params)" />
+    <arg name="run_imu" value="$(arg run_imu)" />
+    <arg name="imu_serial_port" value="$(arg imu_serial_port)" />
+    <arg name="lidar_frame" value="$(arg lidar_frame)" />
+    <arg name="lidar_x" value="$(arg lidar_x)" />
+    <arg name="lidar_y" value="$(arg lidar_y)" />
+    <arg name="lidar_z" value="$(arg lidar_z)" />
+  </include>
+
+  <node if="$(arg run_gps)"
+        pkg="aloam_gps_localization"
+        type="start_warthog_rtk_driver.sh"
+        name="gps_UBX_node"
+        output="screen"
+        respawn="true"
+        respawn_delay="2.0">
+    <param name="port" value="$(arg serial_port)" />
+    <param name="baud_rate" value="$(arg baud_rate)" />
+    <param name="protocol" value="$(arg protocol)" />
+    <param name="configure_receiver" value="false" />
+    <param name="heading_offset_deg" value="$(arg heading_offset_deg)" />
+  </node>
+
+  <node if="$(arg publish_gps_tf)"
+        pkg="tf2_ros"
+        type="static_transform_publisher"
+        name="base_link_to_gps_rtk_map"
+        args="$(arg gps_antenna_x) $(arg gps_antenna_y) $(arg gps_antenna_z) 0 0 0 base_link gps_link" />
+
+  <include file="$(find rslidar_sdk)/launch/helios32_raw_map_navigation_trajectory.launch">
+    <arg name="run_lidar" value="$(arg run_lidar)" />
+    <arg name="rviz" value="$(arg rviz)" />
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="map_name" value="$(arg map_name)" />
+    <arg name="map_dir" value="$(arg map_dir)" />
+    <arg name="cloud_topic" value="$(arg cloud_topic)" />
+    <arg name="scan_topic" value="$(arg scan_topic)" />
+    <arg name="lidar_frame" value="$(arg lidar_frame)" />
+    <arg name="lidar_height" value="$(arg lidar_height)" />
+    <arg name="min_height_above_ground" value="$(arg min_height_above_ground)" />
+    <arg name="max_height_above_ground" value="$(arg max_height_above_ground)" />
+    <arg name="odom_topic" value="$(arg odom_topic)" />
+  </include>
+
+  <node pkg="aloam_gps_localization"
+        type="gps_amcl_initializer.py"
+        name="gps_amcl_initializer"
+        output="screen"
+        required="true">
+    <param name="map_name" value="$(arg map_name)" />
+    <param name="georef_file" value="$(arg georef_file)" />
+    <param name="gps_topic" value="$(arg gps_topic)" />
+    <param name="heading_topic" value="$(arg heading_topic)" />
+    <param name="max_gps_variance_m2" value="$(arg max_gps_variance_m2)" />
+    <param name="max_heading_variance_rad2" value="$(arg max_heading_variance_rad2)" />
+    <param name="max_sensor_age_sec" value="$(arg max_sensor_age_sec)" />
+    <param name="max_georef_rms_m" value="$(arg max_georef_rms_m)" />
+    <param name="auto_publish" value="true" />
+  </node>
+</launch>

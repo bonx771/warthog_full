@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Preserve the existing point-cloud-to-2D conversion and add only a new entry point. -->
+  <arg name="map_name" default="aloam_map_rtk" />
+  <arg name="map_dir" default="$(find warthog_slam)/maps" />
+  <arg name="topic" default="/laser_cloud_map" />
+  <arg name="resolution" default="0.05" />
+  <arg name="z_min" default="-0.20" />
+  <arg name="z_max" default="0.50" />
+  <arg name="padding" default="1.0" />
+  <arg name="min_points_per_cell" default="1" />
+
+  <include file="$(find export_2d_map)/launch/save_aloam_2d_map.launch">
+    <arg name="map_name" value="$(arg map_name)" />
+    <arg name="map_dir" value="$(arg map_dir)" />
+    <arg name="topic" value="$(arg topic)" />
+    <arg name="resolution" value="$(arg resolution)" />
+    <arg name="z_min" value="$(arg z_min)" />
+    <arg name="z_max" value="$(arg z_max)" />
+    <arg name="padding" value="$(arg padding)" />
+    <arg name="min_points_per_cell" value="$(arg min_points_per_cell)" />
+    <arg name="once" value="true" />
+  </include>
+</launch>
+

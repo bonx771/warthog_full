@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>aloam_gps_localization</name>
+  <version>0.1.0</version>
+  <description>Georeference A-LOAM maps with RTK GNSS and initialize AMCL from the saved alignment.</description>
+
+  <maintainer email="cuong@todo.todo">cuong</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <exec_depend>aloam_velodyne</exec_depend>
+  <exec_depend>export_2d_map</exec_depend>
+  <exec_depend>gps_pkg</exec_depend>
+  <exec_depend>imu_pkg</exec_depend>
+  <exec_depend>map_server</exec_depend>
+  <exec_depend>outdoor_waypoint_nav</exec_depend>
+  <exec_depend>rslidar_sdk</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>warthog_slam</exec_depend>
+
+  <export/>
+</package>
+

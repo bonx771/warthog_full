@@ -11,6 +11,10 @@
   <arg name="run_lidar" default="true"/>
   <arg name="rviz" default="true"/>
   <arg name="use_sim_time" default="false"/>
+  <arg name="map_name" default="aloam_map_1"/>
+  <!-- launch_manager truyền tên và thư mục map từ cấu hình trên xe. -->
+  <arg name="map_dir" default="$(find warthog_slam)/maps"/>
+
 
   <arg name="cloud_topic" default="/rslidar_points"/>
   <arg name="scan_topic" default="/scan"/>
@@ -19,7 +23,7 @@
   <arg name="min_height_above_ground" default="0.35"/>
   <arg name="max_height_above_ground" default="1.60"/>
 
-  <arg name="map_file" default="$(find warthog_slam)/maps/aloam_map_1.yaml"/>
+  <arg name="map_file" default="$(arg map_dir)/$(arg map_name).yaml"/>
   <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered"/>
 
   <!-- The padded footprint has an inscribed radius of about 0.85 m.  Keep a

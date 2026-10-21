@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- New wrapper only: existing A-LOAM, LiDAR, and GPS launch files are untouched. -->
+  <arg name="map_name" default="aloam_map_rtk" />
+  <arg name="map_dir" default="$(find warthog_slam)/maps" />
+  <arg name="georef_file" default="$(arg map_dir)/$(arg map_name)_geo.yaml" />
+
+  <arg name="run_lidar" default="true" />
+  <arg name="use_dynamic_filter" default="true" />
+  <arg name="raw_cloud_topic" default="/rslidar_points" />
+  <arg name="static_cloud_topic" default="/rslidar_points_static" />
+  <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_candidates" />
+  <arg name="rviz" default="true" />
+
+  <arg name="run_gps" default="true" />
+  <arg name="gps_topic" default="/gps/fix" />
+  <arg name="heading_topic" default="/gps/heading" />
+  <arg name="serial_port"
+       default="/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0" />
+  <arg name="baud_rate" default="115200" />
+  <arg name="protocol" default="stm32" />
+  <arg name="heading_offset_deg" default="0.0" />
+
+  <arg name="aloam_odom_topic" default="/aft_mapped_to_init" />
+  <arg name="gps_antenna_x" default="0.0" />
+  <arg name="gps_antenna_y" default="0.0" />
+  <arg name="lidar_x" default="0.40" />
+  <arg name="lidar_y" default="0.0" />
+  <arg name="lidar_yaw" default="0.0" />
+  <arg name="additional_heading_yaw_offset" default="0.0" />
+
+  <!-- gps_UBX_node publishes 0.05 m sigma for RTK Fixed and 1.0 m for Float.
+       Variance <= 0.04 m^2 therefore accepts Fixed-quality data and rejects Float. -->
+  <arg name="max_gps_variance_m2" default="0.04" />
+  <arg name="max_heading_variance_rad2" default="0.007615435" />
+  <arg name="sync_slop_sec" default="0.20" />
+  <arg name="max_sensor_age_sec" default="1.0" />
+  <arg name="min_samples" default="20" />
+  <arg name="min_trajectory_span_m" default="8.0" />
+  <arg name="max_fit_rms_m" default="0.75" />
+
+  <node if="$(arg run_gps)"
+        pkg="aloam_gps_localization"
+        type="start_warthog_rtk_driver.sh"
+        name="gps_UBX_node"
+        output="screen"
+        respawn="true"
+        respawn_delay="2.0">
+    <param name="port" value="$(arg serial_port)" />
+    <param name="baud_rate" value="$(arg baud_rate)" />
+    <param name="protocol" value="$(arg protocol)" />
+    <param name="configure_receiver" value="false" />
+    <param name="heading_offset_deg" value="$(arg heading_offset_deg)" />
+  </node>
+
+  <group if="$(arg use_dynamic_filter)">
+    <include file="$(find aloam_velodyne)/launch/rslidar_aloam_dynamic_mapping.launch">
+      <arg name="run_lidar" value="$(arg run_lidar)" />
+      <arg name="raw_cloud_topic" value="$(arg raw_cloud_topic)" />
+      <arg name="static_cloud_topic" value="$(arg static_cloud_topic)" />
+      <arg name="dynamic_candidates_topic" value="$(arg dynamic_candidates_topic)" />
+      <arg name="rviz" value="$(arg rviz)" />
+    </include>
+  </group>
+
+  <group unless="$(arg use_dynamic_filter)">
+    <include file="$(find aloam_velodyne)/launch/rslidar_aloam_mapping.launch">
+      <arg name="run_lidar" value="$(arg run_lidar)" />
+      <arg name="cloud_topic" value="$(arg raw_cloud_topic)" />
+      <arg name="rviz" value="$(arg rviz)" />
+    </include>
+  </group>
+
+  <node pkg="aloam_gps_localization"
+        type="gps_map_georef_recorder.py"
+        name="gps_map_georef_recorder"
+        output="screen">
+    <param name="map_name" value="$(arg map_name)" />
+    <param name="output_file" value="$(arg georef_file)" />
+    <param name="gps_topic" value="$(arg gps_topic)" />
+    <param name="heading_topic" value="$(arg heading_topic)" />
+    <param name="aloam_odom_topic" value="$(arg aloam_odom_topic)" />
+    <param name="gps_antenna_x" value="$(arg gps_antenna_x)" />
+    <param name="gps_antenna_y" value="$(arg gps_antenna_y)" />
+    <param name="lidar_x" value="$(arg lidar_x)" />
+    <param name="lidar_y" value="$(arg lidar_y)" />
+    <param name="lidar_yaw" value="$(arg lidar_yaw)" />
+    <param name="heading_yaw_offset" value="$(arg additional_heading_yaw_offset)" />
+    <param name="max_gps_variance_m2" value="$(arg max_gps_variance_m2)" />
+    <param name="max_heading_variance_rad2" value="$(arg max_heading_variance_rad2)" />
+    <param name="sync_slop_sec" value="$(arg sync_slop_sec)" />
+    <param name="max_sensor_age_sec" value="$(arg max_sensor_age_sec)" />
+    <param name="min_samples" value="$(arg min_samples)" />
+    <param name="min_trajectory_span_m" value="$(arg min_trajectory_span_m)" />
+    <param name="max_fit_rms_m" value="$(arg max_fit_rms_m)" />
+    <param name="auto_save" value="true" />
+    <param name="auto_save_on_shutdown" value="true" />
+  </node>
+</launch>
+
