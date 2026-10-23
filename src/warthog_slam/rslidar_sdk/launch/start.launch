@@ -1,4 +1,5 @@
 <launch>
+  <!-- Run with: roslaunch rslidar_sdk start.launch -->
   <arg name="rviz" default="true" />
 
   <node pkg="rslidar_sdk" name="rslidar_sdk_node" type="rslidar_sdk_node" output="screen">

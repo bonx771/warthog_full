@@ -45,8 +45,8 @@
   <!-- Match the proven waypoint coarse-turn range.  The 0.25 rad/s floor
        overcomes the skid-steer deadband; 0.40 rad/s keeps 90/180-degree turns
        responsive without changing the forward-speed configuration. -->
-  <arg name="min_in_place_angular_vel" default="0.35"/>
-  <arg name="linear_acc_limit" default="0.60"/>
+  <arg name="min_in_place_angular_vel" default="0.4"/>
+  <arg name="linear_acc_limit" default="0.70"/>
   <arg name="angular_acc_limit" default="0.80"/>
 
   <arg name="initial_pose_x" default="0.0"/>

@@ -8,8 +8,14 @@
   <arg name="run_lidar" default="true" />
   <arg name="use_dynamic_filter" default="true" />
   <arg name="raw_cloud_topic" default="/rslidar_points" />
-  <arg name="static_cloud_topic" default="/rslidar_points_static" />
-  <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_candidates" />
+  <!-- moving_dynamic_filter_node compensates robot motion with wheel odometry. -->
+  <arg name="filter_odom_topic" default="/warthog_velocity_controller/odom" />
+  <arg name="static_cloud_topic" default="/rslidar_points_static_moving" />
+  <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_moving" />
+  <arg name="odom_frame" default="odom" />
+  <arg name="base_frame" default="base_link" />
+  <arg name="lidar_frame" default="rslidar" />
+  <arg name="publish_lidar_tf" default="true" />
   <arg name="rviz" default="true" />
 
   <arg name="run_gps" default="true" />
@@ -26,6 +32,9 @@
   <arg name="gps_antenna_y" default="0.0" />
   <arg name="lidar_x" default="0.40" />
   <arg name="lidar_y" default="0.0" />
+  <arg name="lidar_z" default="1.10" />
+  <arg name="lidar_roll" default="0.0" />
+  <arg name="lidar_pitch" default="0.0" />
   <arg name="lidar_yaw" default="0.0" />
   <arg name="additional_heading_yaw_offset" default="0.0" />
 
@@ -54,11 +63,27 @@
   </node>
 
   <group if="$(arg use_dynamic_filter)">
-    <include file="$(find aloam_velodyne)/launch/rslidar_aloam_dynamic_mapping.launch">
+    <include file="$(find rslidar_sdk)/launch/start_dynamic_filter_moving.launch">
       <arg name="run_lidar" value="$(arg run_lidar)" />
+      <arg name="rviz" value="false" />
       <arg name="raw_cloud_topic" value="$(arg raw_cloud_topic)" />
+      <arg name="odom_topic" value="$(arg filter_odom_topic)" />
       <arg name="static_cloud_topic" value="$(arg static_cloud_topic)" />
       <arg name="dynamic_candidates_topic" value="$(arg dynamic_candidates_topic)" />
+      <arg name="odom_frame" value="$(arg odom_frame)" />
+      <arg name="base_frame" value="$(arg base_frame)" />
+      <arg name="lidar_frame" value="$(arg lidar_frame)" />
+      <arg name="publish_lidar_tf" value="$(arg publish_lidar_tf)" />
+      <arg name="lidar_x" value="$(arg lidar_x)" />
+      <arg name="lidar_y" value="$(arg lidar_y)" />
+      <arg name="lidar_z" value="$(arg lidar_z)" />
+      <arg name="lidar_roll" value="$(arg lidar_roll)" />
+      <arg name="lidar_pitch" value="$(arg lidar_pitch)" />
+      <arg name="lidar_yaw" value="$(arg lidar_yaw)" />
+    </include>
+
+    <include file="$(find aloam_velodyne)/launch/aloam_velodyne_HDL_32.launch">
+      <arg name="cloud_topic" value="$(arg static_cloud_topic)" />
       <arg name="rviz" value="$(arg rviz)" />
     </include>
   </group>

@@ -440,7 +440,7 @@ Visualization Manager:
       Value: true
     - Alpha: 0.7
       Class: rviz/Map
-      Color Scheme: map
+      Color Scheme: costmap
       Draw Behind: false
       Enabled: true
       Name: Global Costmap
