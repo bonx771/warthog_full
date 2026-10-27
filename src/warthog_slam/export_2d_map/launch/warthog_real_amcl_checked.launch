@@ -11,6 +11,7 @@
   <arg name="wheel_odom_topic" default="/odometry/filtered"/>
   <arg name="rf2o_odom_topic" default="/odom_rf2o"/>
   <arg name="nav_odom_topic" default="$(eval arg('rf2o_odom_topic') if arg('use_rf2o_odom') == 'true' else arg('wheel_odom_topic'))"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
 
   <arg name="map_frame" default="map"/>
   <arg name="odom_frame" default="odom"/>
@@ -120,6 +121,7 @@
     <arg name="odom_topic" value="$(arg nav_odom_topic)"/>
     <arg name="scan_topic" value="$(arg scan_topic)"/>
     <arg name="laser_frame" value="$(arg lidar_frame)"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
   </include>
 
   <group if="$(arg rviz)">

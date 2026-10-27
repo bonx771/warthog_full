@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Save only objects beside the driven road. Every point inside the
+       trajectory corridor is removed regardless of its height. -->
+  <arg name="map_name" default="aloam_map_rtk" />
+  <arg name="map_dir" default="$(find warthog_slam)/maps" />
+  <arg name="cloud_topic" default="/laser_cloud_map" />
+  <arg name="trajectory_topic" default="/aft_mapped_path" />
+
+  <!-- Total cleared road width is 2 * road_half_width. Tune this to stop just
+       before the curb/fence; 2.0 removes a 4.0 m-wide corridor. -->
+  <arg name="road_half_width" default="2.0" />
+
+  <arg name="lidar_height" default="1.23" />
+  <arg name="min_height_above_ground" default="0.130" />
+  <arg name="max_height_above_ground" default="1.50" />
+  <arg name="resolution" default="0.05" />
+  <arg name="padding" default="1.0" />
+  <arg name="min_points_per_cell" default="1" />
+  <arg name="occupied_radius" default="0.075" />
+
+  <arg name="ground_cell_size" default="2.0" />
+  <arg name="ground_neighbors" default="8" />
+  <arg name="max_ground_distance" default="30.0" />
+  <arg name="ground_query_resolution" default="0.50" />
+  <arg name="trajectory_sample_spacing" default="0.25" />
+  <arg name="trajectory_smoothing_window" default="5" />
+
+  <include file="$(find aloam_gps_localization)/launch/save_aloam_2d_map_rtk.launch">
+    <arg name="map_name" value="$(arg map_name)" />
+    <arg name="map_dir" value="$(arg map_dir)" />
+    <arg name="cloud_topic" value="$(arg cloud_topic)" />
+    <arg name="trajectory_topic" value="$(arg trajectory_topic)" />
+    <arg name="lidar_height" value="$(arg lidar_height)" />
+    <arg name="min_height_above_ground" value="$(arg min_height_above_ground)" />
+    <arg name="max_height_above_ground" value="$(arg max_height_above_ground)" />
+    <arg name="resolution" value="$(arg resolution)" />
+    <arg name="padding" value="$(arg padding)" />
+    <arg name="min_points_per_cell" value="$(arg min_points_per_cell)" />
+    <arg name="occupied_radius" value="$(arg occupied_radius)" />
+    <arg name="ground_cell_size" value="$(arg ground_cell_size)" />
+    <arg name="ground_neighbors" value="$(arg ground_neighbors)" />
+    <arg name="max_ground_distance" value="$(arg max_ground_distance)" />
+    <arg name="ground_query_resolution" value="$(arg ground_query_resolution)" />
+    <arg name="trajectory_sample_spacing" value="$(arg trajectory_sample_spacing)" />
+    <arg name="trajectory_smoothing_window" value="$(arg trajectory_smoothing_window)" />
+    <arg name="road_half_width" value="$(arg road_half_width)" />
+  </include>
+</launch>

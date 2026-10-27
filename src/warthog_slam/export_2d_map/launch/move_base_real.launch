@@ -4,6 +4,7 @@
   <arg name="odom_topic" default="/odom_rf2o"/>
   <arg name="scan_topic" default="/scan"/>
   <arg name="laser_frame" default="rslidar"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
   <arg name="max_linear_vel" default="0.5"/>
   <arg name="max_angular_vel" default="0.4"/>
 
@@ -59,5 +60,6 @@
     <param unless="$(arg dwa_planner)" name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
 
     <remap from="odom" to="$(arg odom_topic)" />
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)" />
   </node>
 </launch>

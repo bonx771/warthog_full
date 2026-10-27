@@ -13,6 +13,7 @@
 
   <arg name="map_file" default="$(find warthog_slam)/maps/aloam_map_1.yaml"/>
   <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
   <arg name="dwa_planner" default="true"/>
   <arg name="max_linear_vel" default="0.70"/>
   <arg name="max_angular_vel" default="0.40"/>
@@ -60,6 +61,7 @@
     <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
     <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
   </include>
 
   <!-- move_base_real only loads DWA parameters; select the DWA plugin here.

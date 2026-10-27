@@ -16,6 +16,7 @@
   <arg name="base_frame" default="base_link" />
   <arg name="lidar_frame" default="rslidar" />
   <arg name="publish_lidar_tf" default="true" />
+  <arg name="mapping_skip_frame" default="2" />
   <arg name="rviz" default="true" />
 
   <arg name="run_gps" default="true" />
@@ -32,7 +33,9 @@
   <arg name="gps_antenna_y" default="0.0" />
   <arg name="lidar_x" default="0.40" />
   <arg name="lidar_y" default="0.0" />
-  <arg name="lidar_z" default="1.10" />
+  <!-- base_link is about 0.30 m above ground; LiDAR optical center is 1.23 m
+       above ground, so the base_link -> rslidar Z translation is 0.93 m. -->
+  <arg name="lidar_z" default="0.93" />
   <arg name="lidar_roll" default="0.0" />
   <arg name="lidar_pitch" default="0.0" />
   <arg name="lidar_yaw" default="0.0" />
@@ -84,6 +87,8 @@
 
     <include file="$(find aloam_velodyne)/launch/aloam_velodyne_HDL_32.launch">
       <arg name="cloud_topic" value="$(arg static_cloud_topic)" />
+      <!-- Helios publishes at 20 Hz; feed mapping at 10 Hz. -->
+      <arg name="mapping_skip_frame" value="$(arg mapping_skip_frame)" />
       <arg name="rviz" value="$(arg rviz)" />
     </include>
   </group>

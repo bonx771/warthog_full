@@ -1,25 +1,55 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- Preserve the existing point-cloud-to-2D conversion and add only a new entry point. -->
+  <!-- Project the A-LOAM feature map by height above the local trajectory ground. -->
   <arg name="map_name" default="aloam_map_rtk" />
   <arg name="map_dir" default="$(find warthog_slam)/maps" />
-  <arg name="topic" default="/laser_cloud_map" />
+  <arg name="cloud_topic" default="/laser_cloud_map" />
+  <arg name="trajectory_topic" default="/aft_mapped_path" />
+
+  <arg name="lidar_height" default="1.23" />
+  <arg name="min_height_above_ground" default="0.130" />
+  <arg name="max_height_above_ground" default="1.50" />
+
   <arg name="resolution" default="0.05" />
-  <arg name="z_min" default="-0.20" />
-  <arg name="z_max" default="0.50" />
   <arg name="padding" default="1.0" />
   <arg name="min_points_per_cell" default="1" />
+  <!-- Each retained feature marks a disk this large. 0.10 m closes most
+       corner-feature gaps without replacing costmap inflation. -->
+  <arg name="occupied_radius" default="0.075" />
 
-  <include file="$(find export_2d_map)/launch/save_aloam_2d_map.launch">
-    <arg name="map_name" value="$(arg map_name)" />
-    <arg name="map_dir" value="$(arg map_dir)" />
-    <arg name="topic" value="$(arg topic)" />
-    <arg name="resolution" value="$(arg resolution)" />
-    <arg name="z_min" value="$(arg z_min)" />
-    <arg name="z_max" value="$(arg z_max)" />
-    <arg name="padding" value="$(arg padding)" />
-    <arg name="min_points_per_cell" value="$(arg min_points_per_cell)" />
-    <arg name="once" value="true" />
-  </include>
+  <!-- Local-ground interpolation. Points farther than max_ground_distance
+       from the driven trajectory are intentionally not projected. -->
+  <arg name="ground_cell_size" default="2.0" />
+  <arg name="ground_neighbors" default="8" />
+  <arg name="max_ground_distance" default="30.0" />
+  <arg name="ground_query_resolution" default="0.50" />
+  <arg name="trajectory_sample_spacing" default="0.25" />
+  <arg name="trajectory_smoothing_window" default="5" />
+  <!-- Keep this at zero for the original height-only projection. -->
+  <arg name="road_half_width" default="0.0" />
+
+  <node pkg="aloam_gps_localization"
+        type="save_terrain_relative_2d_map.py"
+        name="save_aloam_2d_map_rtk"
+        output="screen"
+        required="true">
+    <param name="cloud_topic" value="$(arg cloud_topic)" />
+    <param name="trajectory_topic" value="$(arg trajectory_topic)" />
+    <param name="output_prefix" value="$(arg map_dir)/$(arg map_name)" />
+    <param name="lidar_height" value="$(arg lidar_height)" />
+    <param name="min_height_above_ground" value="$(arg min_height_above_ground)" />
+    <param name="max_height_above_ground" value="$(arg max_height_above_ground)" />
+    <param name="resolution" value="$(arg resolution)" />
+    <param name="padding" value="$(arg padding)" />
+    <param name="min_points_per_cell" value="$(arg min_points_per_cell)" />
+    <param name="occupied_radius" value="$(arg occupied_radius)" />
+    <param name="ground_cell_size" value="$(arg ground_cell_size)" />
+    <param name="ground_neighbors" value="$(arg ground_neighbors)" />
+    <param name="max_ground_distance" value="$(arg max_ground_distance)" />
+    <param name="ground_query_resolution" value="$(arg ground_query_resolution)" />
+    <param name="trajectory_sample_spacing" value="$(arg trajectory_sample_spacing)" />
+    <param name="trajectory_smoothing_window" value="$(arg trajectory_smoothing_window)" />
+    <param name="road_half_width" value="$(arg road_half_width)" />
+  </node>
 </launch>
 

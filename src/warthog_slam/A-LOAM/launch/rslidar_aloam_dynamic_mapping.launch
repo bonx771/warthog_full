@@ -1,38 +1,48 @@
 <launch>
-    <!-- Keep the vendor driver unchanged and filter its PointCloud2 output. -->
+    <!-- Keep the vendor driver unchanged and compensate robot motion before
+         classifying persistent world-frame voxels as static. -->
     <arg name="run_lidar" default="true" />
     <arg name="raw_cloud_topic" default="/rslidar_points" />
     <arg name="static_cloud_topic" default="/rslidar_points_static" />
     <arg name="dynamic_candidates_topic" default="/rslidar_points_dynamic_candidates" />
+    <arg name="odom_topic" default="/warthog_velocity_controller/odom" />
+    <arg name="odom_frame" default="odom" />
+    <arg name="base_frame" default="base_link" />
+    <arg name="lidar_frame" default="rslidar" />
     <arg name="rviz" default="true" />
 
-    <!-- Temporal filter tuning. At a 10 Hz LiDAR rate, 10 frames is about 1 s. -->
-    <arg name="azimuth_bin_deg" default="0.4" />
-    <arg name="elevation_bin_deg" default="0.1" />
-    <arg name="range_tolerance_m" default="0.20" />
-    <arg name="range_tolerance_ratio" default="0.005" />
-    <arg name="stable_frames" default="3" />
-    <arg name="foreground_persistence_frames" default="30" />
-    <arg name="clearing_persistence_frames" default="3" />
-    <arg name="state_timeout_frames" default="30" />
+    <!-- Measured LiDAR mounting pose relative to base_link. -->
+    <arg name="lidar_x" default="0.40" />
+    <arg name="lidar_y" default="0.0" />
+    <arg name="lidar_z" default="1.10" />
+    <arg name="lidar_roll" default="0.0" />
+    <arg name="lidar_pitch" default="0.0" />
+    <arg name="lidar_yaw" default="0.0" />
 
-    <include file="$(find rslidar_sdk)/launch/start_dynamic_filter.launch">
+    <include file="$(find rslidar_sdk)/launch/start_dynamic_filter_moving.launch">
         <arg name="run_lidar" value="$(arg run_lidar)" />
+        <arg name="rviz" value="false" />
         <arg name="raw_cloud_topic" value="$(arg raw_cloud_topic)" />
+        <arg name="odom_topic" value="$(arg odom_topic)" />
         <arg name="static_cloud_topic" value="$(arg static_cloud_topic)" />
         <arg name="dynamic_candidates_topic" value="$(arg dynamic_candidates_topic)" />
-        <arg name="azimuth_bin_deg" value="$(arg azimuth_bin_deg)" />
-        <arg name="elevation_bin_deg" value="$(arg elevation_bin_deg)" />
-        <arg name="range_tolerance_m" value="$(arg range_tolerance_m)" />
-        <arg name="range_tolerance_ratio" value="$(arg range_tolerance_ratio)" />
-        <arg name="stable_frames" value="$(arg stable_frames)" />
-        <arg name="foreground_persistence_frames" value="$(arg foreground_persistence_frames)" />
-        <arg name="clearing_persistence_frames" value="$(arg clearing_persistence_frames)" />
-        <arg name="state_timeout_frames" value="$(arg state_timeout_frames)" />
+        <arg name="odom_frame" value="$(arg odom_frame)" />
+        <arg name="base_frame" value="$(arg base_frame)" />
+        <arg name="lidar_frame" value="$(arg lidar_frame)" />
+        <arg name="publish_lidar_tf" value="true" />
+        <arg name="lidar_x" value="$(arg lidar_x)" />
+        <arg name="lidar_y" value="$(arg lidar_y)" />
+        <arg name="lidar_z" value="$(arg lidar_z)" />
+        <arg name="lidar_roll" value="$(arg lidar_roll)" />
+        <arg name="lidar_pitch" value="$(arg lidar_pitch)" />
+        <arg name="lidar_yaw" value="$(arg lidar_yaw)" />
     </include>
 
     <include file="$(find aloam_velodyne)/launch/aloam_velodyne_HDL_32.launch">
         <arg name="cloud_topic" value="$(arg static_cloud_topic)" />
+        <!-- Helios publishes at 20 Hz; forward alternate frames so mapping
+             receives the 10 Hz load expected by this A-LOAM configuration. -->
+        <arg name="mapping_skip_frame" value="2" />
         <arg name="rviz" value="$(arg rviz)" />
     </include>
 </launch>

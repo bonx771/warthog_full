@@ -25,6 +25,7 @@
 
   <arg name="map_file" default="$(arg map_dir)/$(arg map_name).yaml"/>
   <arg name="odom_topic" default="/outdoor_waypoint_nav/odometry/filtered"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
 
   <!-- The padded footprint has an inscribed radius of about 0.85 m.  Keep a
        useful cost gradient outside it so Navfn does not place the robot only
@@ -69,6 +70,7 @@
     <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
     <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    <arg name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
   </include>
 
   <!-- costmap_2d copies these parent parameters into whichever inflation

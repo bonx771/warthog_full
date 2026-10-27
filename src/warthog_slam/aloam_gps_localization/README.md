@@ -66,6 +66,44 @@ roslaunch aloam_gps_localization save_aloam_2d_map_rtk.launch \
   map_name:=aloam_map_rtk
 ```
 
+Saver dùng `/aft_mapped_path` để dựng mặt đất cục bộ dọc theo quỹ đạo. Với mỗi
+pose LiDAR, một mốc mặt đất được tạo bằng cách hạ `lidar_height=1.23 m` theo
+trục đứng của pose. Cao độ tại mỗi điểm cloud được nội suy từ các mốc quỹ đạo
+gần nhất, vì vậy dải mặc định `0.20..1.50 m` bám theo đường khi xe lên/xuống,
+thay vì dùng một khoảng Z cố định trong `camera_init`.
+
+`lidar_height=1.23 m` là độ cao quang tâm LiDAR so với mặt đất. Nó khác
+`lidar_z=0.93 m`, là phép tịnh tiến TF từ `base_link` (nằm khoảng 0.30 m trên
+mặt đất) lên `rslidar`.
+
+Các điểm xa quỹ đạo hơn `max_ground_distance=30 m` không được đưa vào map vì
+không có mốc mặt đất cục bộ đủ tin cậy. Mỗi feature hợp lệ được làm dày với
+`occupied_radius=0.10 m`. Có thể thử map dày hơn mà không sửa code, ví dụ:
+
+```bash
+roslaunch aloam_gps_localization save_aloam_2d_map_rtk.launch \
+  map_name:=aloam_map_rtk \
+  occupied_radius:=0.15
+```
+
+Không nên tăng bán kính quá lớn vì costmap navigation còn inflation thêm lần
+nữa. Saver phải được chạy khi A-LOAM vẫn đang chạy để nhận cả
+`/laser_cloud_map` và toàn bộ `/aft_mapped_path`.
+
+Để bỏ toàn bộ mặt đường và mọi vật nằm trong hành lang xe đã chạy, dùng launch
+riêng:
+
+```bash
+roslaunch aloam_gps_localization save_aloam_2d_map_rtk_no_road.launch \
+  road_half_width:=2.0
+```
+
+`road_half_width=2.0` xóa 2 m về mỗi bên của `/aft_mapped_path`, tức tổng chiều
+rộng 4 m. Bộ lọc này không xét độ cao trong hành lang, nên cả điểm mặt đường và
+vật cao trên đường đều bị bỏ. Hãy chỉnh giá trị để biên xóa dừng trước bó vỉa,
+hàng rào hoặc hàng cây cần giữ lại. Launch save cũ mặc định
+`road_half_width=0.0`, nên vẫn chỉ lọc theo độ cao như trước.
+
 Ba file phải đi cùng nhau:
 
 ```text

@@ -13,10 +13,17 @@
   <arg name="lidar_frame" default="rslidar" />
   <arg name="lidar_x" default="0.40" />
   <arg name="lidar_y" default="0.0" />
-  <arg name="lidar_z" default="1.10" />
-  <arg name="lidar_height" default="1.10" />
-  <arg name="min_height_above_ground" default="0.35" />
-  <arg name="max_height_above_ground" default="1.60" />
+  <!-- TF translation is relative to base_link; height filtering is relative
+       to the ground, so these two values intentionally differ by 0.30 m. -->
+  <arg name="lidar_z" default="0.93" />
+  <arg name="lidar_height" default="1.23" />
+  <arg name="min_height_above_ground" default="0.20" />
+  <arg name="max_height_above_ground" default="1.50" />
+
+  <!-- This launch uses only the 90-degree sector in front of the robot.
+       Angles are relative to +X of lidar_frame: -45 deg .. +45 deg. -->
+  <arg name="scan_angle_min" default="-0.78539816339" />
+  <arg name="scan_angle_max" default="0.78539816339" />
 
   <!-- Enable this for a self-contained AMCL TF chain. Disable it if the same
        local EKF and odom->base_link TF are already running elsewhere. -->
@@ -45,6 +52,19 @@
   <arg name="max_heading_variance_rad2" default="0.007615435" />
   <arg name="max_sensor_age_sec" default="1.0" />
   <arg name="max_georef_rms_m" default="1.0" />
+
+  <!-- Faster steering plus a sharp-turn guard.  At >= 85 degrees the guard
+       stops translation, rotates once in place, and releases the planner
+       after the path-heading error falls below 25 degrees. -->
+  <arg name="max_angular_vel" default="0.65" />
+  <arg name="min_in_place_angular_vel" default="0.40" />
+  <arg name="angular_acc_limit" default="1.50" />
+  <arg name="sharp_turn_enter_angle_deg" default="85.0" />
+  <arg name="sharp_turn_exit_angle_deg" default="25.0" />
+  <arg name="sharp_turn_lookahead_m" default="1.0" />
+  <arg name="sharp_turn_gain" default="1.40" />
+  <arg name="planner_cmd_vel_topic" default="/cmd_vel_trajectory_raw" />
+  <arg name="cmd_vel_topic" default="/cmd_vel" />
 
   <include if="$(arg run_local_odom)"
            file="$(find outdoor_waypoint_nav)/launch/outdoor/amcl_odom_tf.launch">
@@ -90,7 +110,37 @@
     <arg name="min_height_above_ground" value="$(arg min_height_above_ground)" />
     <arg name="max_height_above_ground" value="$(arg max_height_above_ground)" />
     <arg name="odom_topic" value="$(arg odom_topic)" />
+    <arg name="max_angular_vel" value="$(arg max_angular_vel)" />
+    <arg name="min_in_place_angular_vel" value="$(arg min_in_place_angular_vel)" />
+    <arg name="angular_acc_limit" value="$(arg angular_acc_limit)" />
+    <arg name="cmd_vel_topic" value="$(arg planner_cmd_vel_topic)" />
   </include>
+
+  <!-- Override only this launch's PointCloud2 -> LaserScan field of view.
+       Other LiDAR/navigation launch files keep their full 360-degree scan. -->
+  <param name="/obstacle_cloud_to_laserscan/angle_min"
+         value="$(arg scan_angle_min)" />
+  <param name="/obstacle_cloud_to_laserscan/angle_max"
+         value="$(arg scan_angle_max)" />
+
+  <node pkg="aloam_gps_localization"
+        type="sharp_turn_guard.py"
+        name="sharp_turn_guard"
+        output="screen"
+        required="true">
+    <param name="input_cmd_vel_topic" value="$(arg planner_cmd_vel_topic)" />
+    <param name="output_cmd_vel_topic" value="$(arg cmd_vel_topic)" />
+    <param name="plan_topic" value="/move_base/NavfnROS/plan" />
+    <param name="status_topic" value="/move_base/status" />
+    <param name="base_frame" value="base_link" />
+    <param name="enter_angle_deg" value="$(arg sharp_turn_enter_angle_deg)" />
+    <param name="exit_angle_deg" value="$(arg sharp_turn_exit_angle_deg)" />
+    <param name="lookahead_distance" value="$(arg sharp_turn_lookahead_m)" />
+    <param name="minimum_angular_speed" value="$(arg min_in_place_angular_vel)" />
+    <param name="maximum_angular_speed" value="$(arg max_angular_vel)" />
+    <param name="angular_acceleration_limit" value="$(arg angular_acc_limit)" />
+    <param name="turn_gain" value="$(arg sharp_turn_gain)" />
+  </node>
 
   <node pkg="aloam_gps_localization"
         type="gps_amcl_initializer.py"

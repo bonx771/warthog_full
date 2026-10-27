@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(aloam_gps_localization)
 
 find_package(catkin REQUIRED COMPONENTS
+  actionlib_msgs
   geometry_msgs
   nav_msgs
   rospy
@@ -16,6 +17,8 @@ catkin_package()
 catkin_install_python(PROGRAMS
   scripts/gps_map_georef_recorder.py
   scripts/gps_amcl_initializer.py
+  scripts/save_terrain_relative_2d_map.py
+  scripts/sharp_turn_guard.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
