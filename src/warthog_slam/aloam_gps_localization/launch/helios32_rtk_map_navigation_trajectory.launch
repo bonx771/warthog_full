@@ -56,8 +56,8 @@
   <!-- Faster steering plus a sharp-turn guard.  At >= 85 degrees the guard
        stops translation, rotates once in place, and releases the planner
        after the path-heading error falls below 25 degrees. -->
-  <arg name="max_angular_vel" default="0.65" />
-  <arg name="min_in_place_angular_vel" default="0.40" />
+  <arg name="max_angular_vel" default="0.6" />
+  <arg name="min_in_place_angular_vel" default="0.50" />
   <arg name="angular_acc_limit" default="1.50" />
   <arg name="sharp_turn_enter_angle_deg" default="85.0" />
   <arg name="sharp_turn_exit_angle_deg" default="25.0" />

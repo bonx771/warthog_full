@@ -11,7 +11,7 @@
 
   <!-- LiDAR is 1.10 m above ground: ground..1.60 m = lidar Z -1.10..0.50 m. -->
   <arg name="lidar_height" default="1.10"/>
-  <arg name="min_height_above_ground" default="0.0"/>
+  <arg name="min_height_above_ground" default="0.1"/>
   <arg name="max_height_above_ground" default="1.60"/>
 
   <include if="$(arg run_dynamic_filter)" file="$(dirname)/start_dynamic_filter.launch">
@@ -38,7 +38,7 @@
     <param name="angle_increment" value="0.0058"/>
     <param name="scan_time" value="0.0333333"/>
     <param name="range_min" value="0.5"/>
-    <param name="range_max" value="30.0"/>
+    <param name="range_max" value="5.0"/>
     <param name="use_inf" value="true"/>
     <param name="inf_epsilon" value="1.0"/>
   </node>

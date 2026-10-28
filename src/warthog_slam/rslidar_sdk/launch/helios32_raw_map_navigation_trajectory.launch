@@ -40,9 +40,9 @@
   <arg name="local_costmap_update_frequency" default="10.0"/>
   <arg name="local_costmap_publish_frequency" default="5.0"/>
 
-  <arg name="max_linear_vel" default="0.70"/>
+  <arg name="max_linear_vel" default="0.9"/>
   <arg name="min_linear_vel" default="0.1"/>
-  <arg name="max_angular_vel" default="0.40"/>
+  <arg name="max_angular_vel" default="0.60"/>
   <!-- Match the proven waypoint coarse-turn range.  The 0.25 rad/s floor
        overcomes the skid-steer deadband; 0.40 rad/s keeps 90/180-degree turns
        responsive without changing the forward-speed configuration. -->
