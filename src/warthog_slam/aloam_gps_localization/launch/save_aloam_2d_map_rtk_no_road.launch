@@ -12,8 +12,8 @@
   <arg name="road_half_width" default="2.0" />
 
   <arg name="lidar_height" default="1.23" />
-  <arg name="min_height_above_ground" default="0.130" />
-  <arg name="max_height_above_ground" default="1.50" />
+  <arg name="min_height_above_ground" default="0.10" />
+  <arg name="max_height_above_ground" default="1.0" />
   <arg name="resolution" default="0.05" />
   <arg name="padding" default="1.0" />
   <arg name="min_points_per_cell" default="1" />

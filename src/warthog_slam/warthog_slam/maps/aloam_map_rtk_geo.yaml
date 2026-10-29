@@ -4,22 +4,22 @@ map_frame: map
 aloam_frame: camera_init
 utm_zone: 48
 utm_hemisphere: N
-utm_origin_easting: 574856.3761420756
-utm_origin_northing: 2328007.902691585
-map_origin_x: 42.57635423898905
-map_origin_y: 30.89830712871447
-utm_to_map_yaw: 1.6621811272479572
-heading_yaw_offset: 1.5628057921920746
+utm_origin_easting: 574940.7747824737
+utm_origin_northing: 2328166.175081183
+map_origin_x: 55.10294218837935
+map_origin_y: -51.08011107236922
+utm_to_map_yaw: -1.591580162962128
+heading_yaw_offset: 1.5584995407560156
 gps_antenna_x: 0.0
 gps_antenna_y: 0.0
 lidar_x: 0.4
 lidar_y: 0.0
 lidar_yaw: 0.0
 fit:
-  sample_count: 1051
-  inlier_count: 1051
-  trajectory_span_m: 168.10891367645786
-  rms_error_m: 0.6154539733448791
-  median_error_m: 0.5664899084228688
-  max_error_m: 1.3221498970146928
-  heading_rms_rad: 0.04896746852974407
+  sample_count: 631
+  inlier_count: 623
+  trajectory_span_m: 201.8731031454839
+  rms_error_m: 0.6270233183738994
+  median_error_m: 0.4730242745762769
+  max_error_m: 1.5305476915050327
+  heading_rms_rad: 0.027133990526262766

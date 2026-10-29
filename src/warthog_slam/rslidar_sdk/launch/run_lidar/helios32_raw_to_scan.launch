@@ -17,7 +17,7 @@
   <!-- Height is now evaluated relative to the locally fitted ground line. -->
   <arg name="lidar_height" default="1.23"/>
   <arg name="min_height_above_ground" default="0.30"/>
-  <arg name="max_height_above_ground" default="1.60"/>
+  <arg name="max_height_above_ground" default="0.50"/>
 
   <include if="$(arg run_lidar)" file="$(dirname)/../start.launch">
     <!-- Do not open the PointCloud2 RViz configuration from start.launch. -->
